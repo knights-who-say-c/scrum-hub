@@ -4,3 +4,4 @@ ScrumHub is a version control system that makes it easy to collaborate with peer
 
 ## Authors
 - Armani Merlino
+- Robbie Wilkowski

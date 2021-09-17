@@ -5,7 +5,7 @@ print("Starting Demo...")
 database = mysql.connector.connect(
     host = "localhost",
     port = "3306",
-    user = "armani",
+    user = "root",
     password = "jesse",
     database = "test"
     )

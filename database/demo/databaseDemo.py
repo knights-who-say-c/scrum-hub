@@ -6,15 +6,15 @@ database = mysql.connector.connect(
     host = "localhost",
     port = "3306",
     user = "root",
-    password = "jesse",
-    database = "test"
+    password = "jesse"
     )
 
 cursor = database.cursor()
 
+cursor.execute("CREATE DATABASE IF NOT EXISTS test")
+
 cursor.execute("USE test")
 
-print("Wiping table...")
 cursor.execute("DROP TABLE IF EXISTS demo")
 
 cursor.execute("CREATE TABLE demo (FirstName Char(30), LastName Char(30), Age INT, Class Char(7))")

@@ -1,4 +1,0 @@
-Use official mysql image from docker:
-
-$ docker pull mysql
-$ docker run --name <name> -e MYSQL_ROOT_PASSWORD=<password> -p 3360:3360 -d mysql:latest

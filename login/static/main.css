@@ -1,0 +1,49 @@
+.inline-button {
+	display: inline-block;
+	height: 50%;
+	vertical-align: middle;
+	padding-right: 25px;
+}
+
+.header {
+	background-color: #005bbb;
+	color: White;
+	height: max(10vh, 64px);
+	width: 100vw;
+	align-items: center;
+}
+
+.logo {
+ margin-left: 15px;
+}
+
+
+body {
+	margin: 0px;
+}
+
+a {
+	color: inherit !important;
+	text-decoration: none !important;
+}
+
+.split-view {
+	width: 100%;
+}
+
+.login-form {
+	margin-left: 20%;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	float:right;
+	background-color: Whitesmoke;
+	width:50%;
+}
+
+.login-form > form {
+	margin-left: 20%;
+}
+
+form > input[type=submit] {
+	margin-top: 20px;
+}

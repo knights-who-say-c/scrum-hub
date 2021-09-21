@@ -1,0 +1,51 @@
+<html>
+	<head>
+	<title>{{title}}</title>
+	 <link rel="stylesheet" href="/static/main.css"/>
+
+	</head>
+
+	<body>
+
+		<div class = "header">
+			<div class="logo">
+			Scrum Hub
+			</div>
+
+			<div style = "float:right">
+				<div class = "inline-button"> 
+				<a href = "/login"> Log in </a>
+				</div>
+				<div class = "inline-button">
+				<a href = "/register"> Sign up </a>
+				</div>
+			</div>
+		</div>
+
+	<div class = "split-view">
+		<div style = "float:left; background-color: Gray; width: 50%">
+	
+			<img src = "static/logoPlaceholder.png" />
+
+		</div>
+
+		<div class = "login-form">
+	
+			<form action = "loginHandler.py" method = "POST">
+				
+				<label for="email">Email address:</label><br/>
+				<input type="text" id="email"><br/>
+  				<label for="password">Password:</label><br/>
+  				<input type="password" id="password"><br/>
+
+				<input type="submit" value="Submit">
+
+			</form>		
+
+		</div>
+	</div>
+
+	
+	</body>
+
+</html>

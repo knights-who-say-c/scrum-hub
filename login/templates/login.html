@@ -23,20 +23,34 @@
 		</div>
 
 	<div class = "split-view">
-		<div style = "float:left; background-color: Gray; width: 50%">
+		<div class = "logo-big">
 	
-			<img src = "static/logoPlaceholder.png" />
+			<span class="thingy"></span><img src = "static/logoPlaceholder.png" />
 
 		</div>
 
 		<div class = "login-form">
+
+
 	
 			<form action = "loginHandler.py" method = "POST">
+				
+				{% if title == 'Sign Up' %}
+					<label for="firstName">First Name:</label><br/>
+					<input type="text" id="firstName"><br/>
+  					<label for="lastName">Last Name:</label><br/>
+  					<input type="text" id="lastName"><br/>
+				{% endif %}
 				
 				<label for="email">Email address:</label><br/>
 				<input type="text" id="email"><br/>
   				<label for="password">Password:</label><br/>
   				<input type="password" id="password"><br/>
+
+				{% if title == 'Sign Up' %}
+					<label for="passwordConfirm">Confirm Password:</label><br/>
+					<input type="password" id="passwordConfirm"><br/>
+				{% endif %}
 
 				<input type="submit" value="Submit">
 

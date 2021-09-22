@@ -8,13 +8,13 @@
 .header {
 	background-color: #005bbb;
 	color: White;
-	height: max(10vh, 64px);
+	height: max(5vh, 64px);
 	width: 100vw;
 	align-items: center;
 }
 
 .logo {
- margin-left: 15px;
+	margin-left: 15px;
 }
 
 
@@ -29,13 +29,38 @@ a {
 
 .split-view {
 	width: 100%;
+	align-items: center;
+	display: flex;
+	height: calc(100vh - max(10vh, 64px));
+	background-color: cadetblue;
+}
+
+.logo-big {
+	background-color: Gray;
+	width: 50%;
+	height: 100%;
+	display: inline-block;
+	text-align: center;
+}
+
+.logo-big > img {
+	max-width: 25%;
+	align-items: center;
+	padding-top: max(100px, 10vh);
+	padding-bottom: max(100px, 10vh);
+	vertical-align: middle;
+}
+
+.thingy {
+	vertical-align: middle;
+	display: inline-block;
+	height: 100%;
 }
 
 .login-form {
-	margin-left: 20%;
+	display: inline-block;
 	padding-top: 20px;
 	padding-bottom: 20px;
-	float:right;
 	background-color: Whitesmoke;
 	width:50%;
 }

@@ -1,6 +1,3 @@
 build:
   docker:
-    web: login/Dockerfile
-
-run:
-  web: docker run --publish 0.0.0.0:$PORT scrumhub
+    web: Dockerfile

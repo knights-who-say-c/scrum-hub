@@ -1,0 +1,1 @@
+web: gunicorn scrumhub.login.login:app

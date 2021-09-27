@@ -1,1 +1,1 @@
-web: gunicorn login:app
+web: gunicorn scrumhub/login/login:app

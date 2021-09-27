@@ -1,6 +1,6 @@
 build:
   docker:
-    web: /app/Dockerfile
+    web: Dockerfile
 
 run:
-  web: gunicorn scrumhub.login.login:app
+  web: gunicorn -b 0.0.0.0:$PORT scrumhub.login.login:app

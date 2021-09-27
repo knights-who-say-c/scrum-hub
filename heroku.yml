@@ -3,4 +3,4 @@ build:
     web: login/Dockerfile
 
 run:
-  web: docker run --publish $PORT:$PORT scrumhub
+  web: docker run --publish 0.0.0.0:$PORT scrumhub

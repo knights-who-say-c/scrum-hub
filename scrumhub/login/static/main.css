@@ -72,3 +72,41 @@ a {
 form > input[type=submit] {
 	margin-top: 20px;
 }
+
+.main {
+	margin-left: 160px; /* Same as the width of the sidebar */
+	padding: 0px 10px;
+	background: lightgrey;
+    height: 100%;
+  }
+
+.sidenav {
+	height: 100%; /* Full-height: remove this if you want "auto" height */
+	width: 200px;
+	position: fixed;
+	left: 0;
+	background-color: gray; 
+	padding-top: 30px;
+	display: block;
+}
+
+.sidenav a {
+	padding: inherit;
+	font-size: 25px;
+	color: white;
+	display: block;
+  }
+
+.mainback{
+    margin-left: auto;
+    margin-right: auto;
+    width: fit-content;
+    padding-top: 20%;
+    padding-left: inherit;
+	font-size: x-large;
+}
+
+.mainnew{
+	background-color: gray;
+    color: black;
+}

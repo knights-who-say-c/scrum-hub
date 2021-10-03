@@ -5,6 +5,23 @@ import psycopg2
 
 app = Flask(__name__)
 
+DATABASE_PASSWORD = os.environ['DATABASE_PASSWORD']
+DATABASE_URL = os.environ['DATABASE_URL']
+
+database = psycopg2.connect(DATABASE_URL, password=DATABASE_PASSWORD, sslmode='require')
+cur = database.cursor()
+
+cur.execute("CREATE DATABASE test IF test NOT EXIST")
+cur.execute("USE test")
+cur.execute("CREATE TABLE logins IF logins NOT EXIST")
+
+app.run(host='0.0.0.0', port=8000)
+
+
+
+
+
+
 def validEmail(email):
     at = email.find("@")
     dot = email.find(".", start = at)
@@ -15,6 +32,10 @@ def validPassword(password, confirm):
     confirmation = password == confirm
     
     return length and confirmation
+
+def authenticate(email, password):
+    pwd = cur.execute("SELECT password FROM logins WHERE email = %s", (email))
+    return password == pwd
 
 @app.route('/login')
 def login():
@@ -32,7 +53,13 @@ def handleLogin():
         email = formData['email']
         password = formData['password']
 
-    return render_template("login.html", title = "Log In")
+        msg = ""
+        if authenticate(email, password):
+            msg = "Hello, " + email
+        else:
+            msg = "Email and password do not match"
+
+    return render_template("login.html", title = "Log In", feedback = msg)
 
 
 @app.route('/registerRequest', methods = ['POST'])
@@ -46,24 +73,25 @@ def handleRegister():
         password = formData['password']
         passwordConfirm = formData['passwordConfirm']
 
-        feedback = ""
+        msg = ""
         if not validPassword(password, passwordConfirm):
-            feedback += "Password and confirmation must be the same <br/>"
+            msg += "Password and confirmation must be the same <br/>"
 
         if not validEmail(email):
-            feedback += "Email is not a valid address <br/>"
+            msg += "Email is not a valid address <br/>"
+
+        if not feedback:
+            cur.execute("INSERT INTO logins(firstName, lastName, email, password) VALUES(%s %s %s %s)", (name[0], name[1], email, password))
+            msg = "Account created for " + email
         
-    return render_template("login.html", title = "Sign Up", feedback = feedback)
+    return render_template("login.html", title = "Sign Up", feedback = msg)
 
 
-# DATABASE_PASSWORD = os.environ['DATABASE_PASSWORD']
-db_config = os.environ['DATABASE_URL'] if 'DATABASE_URL' in os.environ else 'user=postgres password=password'
-
-database = psycopg2.connect(db_config, sslmode='require')
 
 
-print("Does this work?")
 
-app.run(host='0.0.0.0', port=8000)
+
+
+
 
 

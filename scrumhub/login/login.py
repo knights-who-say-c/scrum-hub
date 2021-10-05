@@ -14,6 +14,10 @@ def login():
 def home():
     return render_template("login.html", title = "Sign Up")
 
+@app.route('/crproject')
+def crproject():
+    return render_template("crproject.html", title = "Sign Up")
+
 # app.run(host='0.0.0.0', port=8000)
 # line 13 not necessary to run in container
 # according to docker documentation

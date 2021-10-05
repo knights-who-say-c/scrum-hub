@@ -110,3 +110,13 @@ form > input[type=submit] {
 	background-color: gray;
     color: black;
 }
+
+.maincreate{
+	background-color: gray;
+    color: black;
+	padding: 20;
+}
+
+.mainspace{
+	padding: 20;
+}

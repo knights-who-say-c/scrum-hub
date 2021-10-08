@@ -8,24 +8,24 @@ app = Flask(__name__)
 DATABASE_PASSWORD = os.environ['DATABASE_PASSWORD']
 DATABASE_URL = os.environ['DATABASE_URL']
 
-database = psycopg2.connect(DATABASE_URL, password=DATABASE_PASSWORD, sslmode='require')
+''' These credentials are bound to change over time.
+    Can't figure out Heroku's DATABASE_URL so this has to do.... '''
+
+HOST = "ec2-34-233-187-36.compute-1.amazonaws.com"
+DATABASE = "dbdb4ogu09rgqg"
+USER = "wrwgrvzkfihtdb"
+PORT = "5432"
+
+#database = psycopg2.connect(DATABASE_URL, password=DATABASE_PASSWORD, sslmode='require')
+database = psycopg2.connect(dbname = DATABASE, user = USER, password = DATABASE_PASSWORD, host = HOST, port = PORT)
 cur = database.cursor()
 
-cur.execute("CREATE DATABASE test IF test NOT EXIST")
-cur.execute("USE test")
-cur.execute("CREATE TABLE logins IF logins NOT EXIST")
-
-app.run(host='0.0.0.0', port=8000)
-
-
-
-
-
+cur.execute("CREATE TABLE IF NOT EXISTS testLogins (firstName text, lastName text, email text, password text)")
 
 def validEmail(email):
     at = email.find("@")
-    dot = email.find(".", start = at)
-    return at != -1 and dot != -1
+    dot = email.find(".")
+    return at != -1 and dot > at
 
 def validPassword(password, confirm):
     length = len(password) > 6
@@ -34,8 +34,7 @@ def validPassword(password, confirm):
     return length and confirmation
 
 def authenticate(email, password):
-    pwd = cur.execute("SELECT password FROM logins WHERE email = %s", (email))
-    return password == pwd
+   return False
 
 @app.route('/login')
 def login():
@@ -47,19 +46,8 @@ def register():
 
 @app.route('/loginRequest', methods = ['POST'])
 def handleLogin():
-    if request.method == 'POST':
-        formData = request.form
-
-        email = formData['email']
-        password = formData['password']
-
-        msg = ""
-        if authenticate(email, password):
-            msg = "Hello, " + email
-        else:
-            msg = "Email and password do not match"
-
-    return render_template("login.html", title = "Log In", feedback = msg)
+   
+    return render_template("login.html", title = "Log In", feedback = "Login not implemented yet")
 
 
 @app.route('/registerRequest', methods = ['POST'])
@@ -67,7 +55,8 @@ def handleRegister():
     if request.method == 'POST':
         formData = request.form
 
-        name = (formData['firstName'], formData['lastName'])
+        first = formData['firstName']
+        last = formData['lastName']
 
         email = formData['email']
         password = formData['password']
@@ -80,13 +69,14 @@ def handleRegister():
         if not validEmail(email):
             msg += "Email is not a valid address <br/>"
 
-        if not feedback:
-            cur.execute("INSERT INTO logins(firstName, lastName, email, password) VALUES(%s %s %s %s)", (name[0], name[1], email, password))
+        if not msg:
+            cur.execute("INSERT INTO testLogins (firstName, lastName, email, password) VALUES(%s, %s, %s, %s)", (first, last, email, password))
             msg = "Account created for " + email
         
     return render_template("login.html", title = "Sign Up", feedback = msg)
 
 
+app.run()
 
 
 

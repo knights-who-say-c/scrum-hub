@@ -44,7 +44,11 @@
 					{% set action = '/loginRequest' %}
 				{% endif %}
 
-			<!-- Form for handling login information. Information sends, but needs to be parsed by server. -->
+			
+			<p>
+				{{feedback}}
+			</p>
+
 			<form action = {{ action }} method = "POST">
 				
 				{% if title == 'Sign Up' %}

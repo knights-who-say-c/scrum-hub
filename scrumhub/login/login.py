@@ -16,7 +16,11 @@ def home():
 
 @app.route('/crproject')
 def crproject():
-    return render_template("crproject.html", title = "Sign Up")
+    return render_template("crproject.html", title = "Create New Project")
+
+@app.route('/project')
+def project():
+    return render_template("project.html", title = "Project Page")
 
 # app.run(host='0.0.0.0', port=8000)
 # line 13 not necessary to run in container

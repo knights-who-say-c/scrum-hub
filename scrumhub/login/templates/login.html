@@ -38,26 +38,34 @@
 		</div>
 
 		<div class = "login-form">
+				{% if title == 'Sign Up' %}
+					{% set action = '/registerRequest' %}
+				{% elif title == 'Log In' %}
+					{% set action = '/loginRequest' %}
+				{% endif %}
 
+			
+			<p>
+				{{feedback}}
+			</p>
 
-			<!-- Form for handling login information. Information sends, but needs to be parsed by server. -->
-			<form action = "loginHandler.py" method = "POST">
+			<form action = {{ action }} method = "POST">
 				
 				{% if title == 'Sign Up' %}
 					<label for="firstName">First Name:</label><br/>
-					<input type="text" id="firstName"><br/>
+					<input type="text" id="firstName" name="firstName" required><br/>
   					<label for="lastName">Last Name:</label><br/>
-  					<input type="text" id="lastName"><br/>
+  					<input type="text" id="lastName" name = "lastName" required><br/>
 				{% endif %}
 				
 				<label for="email">Email address:</label><br/>
-				<input type="text" id="email"><br/>
+				<input type="text" id="email" name="email" required><br/>
   				<label for="password">Password:</label><br/>
-  				<input type="password" id="password"><br/>
+  				<input type="password" id="password" name="password" required><br/>
 
 				{% if title == 'Sign Up' %}
 					<label for="passwordConfirm">Confirm Password:</label><br/>
-					<input type="password" id="passwordConfirm"><br/>
+					<input type="password" id="passwordConfirm" name="passwordConfirm" required><br/>
 				{% endif %}
 
 				<input type="submit" value="Submit">

@@ -110,3 +110,34 @@ form > input[type=submit] {
 	background-color: gray;
     color: black;
 }
+
+.maincreate{
+	background-color: gray;
+    color: black;
+	padding: 20;
+}
+
+.mainspace{
+	padding: 20;
+}
+
+.columns{
+	float: left;
+    width: max-content;
+    padding: 20;
+    height: 100%;
+    vertical-align: top;
+	background-color: #ccc;
+}
+
+.newlogo{
+	margin-left: 240px;
+}
+
+.mainbackproject{
+    margin-left: auto;
+    margin-right: auto;
+    width: fit-content;
+    padding-left: inherit;
+	font-size: x-large;
+}

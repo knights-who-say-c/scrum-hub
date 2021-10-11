@@ -74,6 +74,13 @@ def handleRegister():
             msg = "Account created for " + email
         
     return render_template("login.html", title = "Sign Up", feedback = msg)
+@app.route('/crproject')
+def crproject():
+    return render_template("crproject.html", title = "Create New Project")
+
+@app.route('/project')
+def project():
+    return render_template("project.html", title = "Project Page")
 
 # app.run(host='0.0.0.0', port=8000)
 # not necessary to run in container according to docker documentation

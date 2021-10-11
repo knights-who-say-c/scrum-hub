@@ -24,7 +24,15 @@ def validPassword(password, confirm):
     return length and confirmation
 
 def authenticate(email, password):
-   return False
+   cur.execute("SELECT email FROM testLogins WHERE email = %s", (email,))
+   existing = cur.fetchone()
+   if not existing:
+       return -1
+   pwd = cur.execute("SELECT password FROM logins WHERE email = %s", (email))
+   if pwd:
+       return 1
+   else:
+      return 0
 
 @app.route('/login')
 def login():
@@ -36,8 +44,22 @@ def register():
 
 @app.route('/loginRequest', methods = ['POST'])
 def handleLogin():
-   
-    return render_template("login.html", title = "Log In", feedback = "Login not implemented yet")
+    if request.method == 'POST':
+        formData = request.form
+
+        email = formData['email']
+        password = formData['password']
+
+        msg = ""
+        code = authenticate(email, password)
+        if code==-1:
+            msg = "No account exists for that email"
+        elif code==0:
+            msg = "Email and password do not match"
+        else:
+            msg = "Welcome, " + email
+
+    return render_template("login.html", title = "Log In", feedback = msg)
 
 
 @app.route('/registerRequest', methods = ['POST'])
@@ -73,11 +95,3 @@ def handleRegister():
 
 
 app.run()
-
-
-
-
-
-
-
-

@@ -1,0 +1,54 @@
+<head>
+  <title>Profile</title>
+  <link rel="stylesheet" href="/static/main.css">
+</head>
+<body>
+  <div class="header">
+    <!-- Logo on top left corner. Plain text for now -->
+    <div class="logo"> Scrum Hub </div>
+    <!-- Navigation buttons on top right corner. "Home" -->
+    <div style = "float:right">
+      <div class = "inline-button"> 
+        <a href = "/home"> Home </a>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align: center;">
+    <img src="static/default-avatar.png" alt="Profile Picture" class="image">
+    <button >Change Picture</button>
+  </div>
+
+  <div style="text-align: center;">
+    <br/>
+    <form action="/profileUpdater" method="POST">
+      <label for="text-form-name">Full Name: </label>
+      <input id="text-form-name" type="text" name="name"><br/>
+
+      <label for="text-form-user">Username: </label>
+      <input id="text-form-user" type="text" name="user"><br/>
+
+      <label for="text-form-email">E-mail: </label>
+      <input id="text-form-email" type="text" name="email"><br/>
+
+      <label for="text-form-phone">Phone Number: </label>
+      <input id="text-form-phone" type="text" name="phone"><br/>
+
+      <input type="submit" value="Save Changes">
+    </form>
+  </div>
+
+  <h2>Projects</h2>
+
+  <div class="card">
+    <div class="container">
+      <h4><b>Sample Project 1</b></h4>
+    </div>
+  </div>
+  <br\>
+  <div class="card">
+    <div class="container">
+      <h4><b>Sample Project 2</b></h4>
+    </div>
+  </div>
+</body>

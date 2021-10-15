@@ -1,7 +1,7 @@
 <html>
 	<head>
 	<title>{{title}}</title>
-	 <link rel="stylesheet" href="/static/main.css"/>
+	 <link rel="stylesheet" href="/static/main.css">
 
 	</head>
 
@@ -27,6 +27,7 @@
 			
 			<div style = "float:right">
 				<div class = "inline-button"> 
+					<a href='javascript:fileUpload('yes')'> Add a File </a>
 					<a href="#"> Add  Collaborator</a>
 				</div>
 			</div>
@@ -42,6 +43,8 @@
             <!-- <div class="mainnew">
                 <a href="crproject">Create New Project</a>
             </div> -->
+
+	
 
             <div class = "columns" style="background-color:#ccc;">
                 <h2>Backlog</h2>
@@ -66,7 +69,18 @@
 
 	</div>
 
-	
-	</body>
+<div id="popupbox"> 
+<form name="fileUpload" action="" method="post">
+File Name: <input name="filename" size="14" />
+<br/>
+File: <input name="file" type="file" size="14" />
+<br/>
+<input type="submit" name="submit" value="Submit" />
+</form>
+<a href="javascript:fileUpload('no');">Hide</a>
+</div> 
+
+<script src="../static/project.js"></script>
+</body>
 
 </html>

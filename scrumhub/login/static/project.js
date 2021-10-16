@@ -2,8 +2,8 @@
 
 function fileUpload(display){
 if(display == "no"){
-    document.getElementById('popupbox').style.visibility="hidden";}
+    document.getElementById('popup').style.visibility="hidden";}
 else if(display == "yes"){
-    document.getElementById('popupbox').style.visibility="visible";}
+    document.getElementById('popup').style.visibility="visible";}
 }
 </script>

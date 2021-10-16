@@ -6,11 +6,22 @@ import psycopg2
 app = Flask(__name__)
 
 DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_URL = "postgres://wrwgrvzkfihtdb:bec460c350a6b77c2cd4bddd0484cdeef19b0a3a1a4660ae28e4b333936edcd0@ec2-34-233-187-36.compute-1.amazonaws.com:5432/dbdb4ogu09rgqg"
 database = psycopg2.connect(DATABASE_URL, sslmode='require')
 cur = database.cursor()
 database.autocommit = True
 
 cur.execute("CREATE TABLE IF NOT EXISTS testLogins (firstName text, lastName text, email text, password text)")
+cur.execute("CREATE TABLE IF NOT EXISTS testUploads (fileName text, file bytea, extension text, simpleName text)")
+
+
+
+def escapeHTML(string):
+    string = string.replace('&', "&amp;")
+    string = string.replace('<', "&lt;")
+    string = string.replace('>', "&gt;")
+
+    return string
 
 def validEmail(email):
     at = email.find("@")
@@ -82,5 +93,39 @@ def crproject():
 def project():
     return render_template("project.html", title = "Project Page")
 
-# app.run(host='0.0.0.0', port=8000)
+@app.route('/project/fileUpload')
+def fileUpload():
+    return render_template("fileUpload.html", title = "File Upload")
+
+@app.route('/project/fileUploadRequest', methods = ['POST'])
+def fileUploadRequest():
+    if request.method == "POST":
+        formData = request.form
+        print(formData)
+        print(request.files)
+
+        name = formData["filename"]
+        name = escapeHTML(name)
+
+        f = request.files["file"]
+        #filename = f.filename
+        #print(upload)
+
+        extension = ""
+        print("Testing Database")
+
+        cur.execute("INSERT INTO testUploads (fileName, file, extension, simpleName) VALUES(%s, %s, %s)", (upload.filename, upload, extension, name))
+        cur.execute("SELECT * FROM testUploads where fileName = %s", (name,))
+        result = cur.fetchone()
+        print(result)
+        filePath = result(3) + result(2)
+
+        with open(filePath, "wb") as testFile:
+            testFile.write(result(1))
+        
+
+
+    return project()
+
+app.run(host='0.0.0.0', port=8000)
 # not necessary to run in container according to docker documentation

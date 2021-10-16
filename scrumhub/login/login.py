@@ -2,6 +2,7 @@ from flask import *
 
 import os
 import psycopg2
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
@@ -13,7 +14,6 @@ database.autocommit = True
 
 cur.execute("CREATE TABLE IF NOT EXISTS testLogins (firstName text, lastName text, email text, password text)")
 cur.execute("CREATE TABLE IF NOT EXISTS testUploads (fileName text, file bytea, extension text, simpleName text)")
-
 
 
 def escapeHTML(string):
@@ -36,6 +36,10 @@ def validPassword(password, confirm):
 
 def authenticate(email, password):
    return False
+
+@app.route('/')
+def index():
+    return home()
 
 @app.route('/home')
 def home():
@@ -101,27 +105,25 @@ def fileUpload():
 def fileUploadRequest():
     if request.method == "POST":
         formData = request.form
-        print(formData)
-        print(request.files)
 
         name = formData["filename"]
         name = escapeHTML(name)
 
-        f = request.files["file"]
-        #filename = f.filename
-        #print(upload)
+        upload = request.files["file"]
+        filename = secure_filename(upload.filename)
+        upload = upload.read()
 
-        extension = ""
+        extension = filename.split(".")[-1]
         print("Testing Database")
 
-        cur.execute("INSERT INTO testUploads (fileName, file, extension, simpleName) VALUES(%s, %s, %s)", (upload.filename, upload, extension, name))
-        cur.execute("SELECT * FROM testUploads where fileName = %s", (name,))
+        cur.execute("INSERT INTO testUploads (fileName, file, extension, simpleName) VALUES(%s, %s, %s, %s)", (filename, upload, extension, name))
+        cur.execute("SELECT * FROM testUploads where fileName = %s", (filename,))
         result = cur.fetchone()
         print(result)
-        filePath = result(3) + result(2)
+        filePath = result[3] + "." + result[2]
 
         with open(filePath, "wb") as testFile:
-            testFile.write(result(1))
+            testFile.write(result[1])
         
 
 

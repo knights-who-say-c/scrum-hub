@@ -114,12 +114,10 @@ def fileUploadRequest():
         upload = upload.read()
 
         extension = filename.split(".")[-1]
-        print("Testing Database")
 
         cur.execute("INSERT INTO testUploads (fileName, file, extension, simpleName) VALUES(%s, %s, %s, %s)", (filename, upload, extension, name))
         cur.execute("SELECT * FROM testUploads where fileName = %s", (filename,))
         result = cur.fetchone()
-        print(result)
         filePath = result[3] + "." + result[2]
 
         with open(filePath, "wb") as testFile:
@@ -129,5 +127,5 @@ def fileUploadRequest():
 
     return project()
 
-app.run(host='0.0.0.0', port=8000)
+# app.run(host='0.0.0.0', port=8000)
 # not necessary to run in container according to docker documentation

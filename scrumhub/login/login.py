@@ -15,7 +15,6 @@ database.autocommit = True
 cur.execute("CREATE TABLE IF NOT EXISTS testLogins (firstName text, lastName text, email text, password text)")
 cur.execute("CREATE TABLE IF NOT EXISTS testUploads (fileName text, file bytea, extension text, simpleName text)")
 
-
 def escapeHTML(string):
     string = string.replace('&', "&amp;")
     string = string.replace('<', "&lt;")
@@ -95,7 +94,15 @@ def crproject():
 
 @app.route('/project')
 def project():
-    return render_template("project.html", title = "Project Page")
+    cur.execute("SELECT * FROM testUploads")
+    uploadedFiles = cur.fetchall()
+    htmlInject = ""
+    for x in uploadedFiles:
+        htmlInject += ("<p>" + x[3] + "." + x[2] + "</p>")
+
+    print(htmlInject)
+    
+    return render_template("project.html", title = "Project Page", files = htmlInject)
 
 @app.route('/project/fileUpload')
 def fileUpload():

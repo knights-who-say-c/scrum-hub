@@ -22,16 +22,19 @@
   <div style="text-align: center;">
     <br/>
     <form action="/profileUpdater" method="POST">
-      <label for="text-form-name">Full Name: </label>
+      <label for="text-form-name">First Name: </label>
       <input id="text-form-name" type="text" name="name"><br/>
 
-      <label for="text-form-user">Username: </label>
-      <input id="text-form-user" type="text" name="user"><br/>
+      <label for="text-form-name">Last Name: </label>
+      <input id="text-form-name" type="text" name="name"><br/>
 
       <label for="text-form-email">E-mail: </label>
       <input id="text-form-email" type="text" name="email"><br/>
 
-      <label for="text-form-phone">Phone Number: </label>
+      <label for="text-form-phone">Password: </label>
+      <input id="text-form-phone" type="text" name="phone"><br/>
+
+      <label for="text-form-phone">Confirm Password: </label>
       <input id="text-form-phone" type="text" name="phone"><br/>
 
       <input type="submit" value="Save Changes">
@@ -52,3 +55,10 @@
     </div>
   </div>
 </body>
+
+<!-- Add to profile page As a user I want to be able to view/change my profile -->
+<!-- Profile page functionality backend
+user should change email/pass/name
+profile picture = bonus 
+change acceptance tests for filling in forms
+-->

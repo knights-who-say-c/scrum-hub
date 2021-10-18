@@ -1,19 +1,35 @@
 from flask import *
-
 import os
 import psycopg2
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+app.secret_key = "testkey1"
 
 DATABASE_URL = os.environ['DATABASE_URL']
-DATABASE_URL = "postgres://wrwgrvzkfihtdb:bec460c350a6b77c2cd4bddd0484cdeef19b0a3a1a4660ae28e4b333936edcd0@ec2-34-233-187-36.compute-1.amazonaws.com:5432/dbdb4ogu09rgqg"
 database = psycopg2.connect(DATABASE_URL, sslmode='require')
 cur = database.cursor()
 database.autocommit = True
 
 cur.execute("CREATE TABLE IF NOT EXISTS testLogins (firstName text, lastName text, email text, password text)")
 cur.execute("CREATE TABLE IF NOT EXISTS testUploads (fileName text, file bytea, extension text, simpleName text)")
+
+# session == user currently logged in's information
+session['email'] = ""
+
+def validEmail(email):
+    at = email.find("@")
+    dot = email.find(".")
+    return at != -1 and dot > at
+
+def validPassword(password, confirm):
+    length = len(password) > 6
+    confirmation = password == confirm
+    
+    return length and confirmation
+
+def authenticate(email, password):
+   return False
 
 def escapeHTML(string):
     string = string.replace('&', "&amp;")
@@ -56,7 +72,6 @@ def register():
 def handleLogin():
    
     return render_template("login.html", title = "Log In", feedback = "Login not implemented yet")
-
 
 @app.route('/registerRequest', methods = ['POST'])
 def handleRegister():
@@ -130,9 +145,45 @@ def fileUploadRequest():
         with open(filePath, "wb") as testFile:
             testFile.write(result[1])
         
-
-
     return project()
 
+@app.route('/profile')
+def profile():
+    return render_template("profile.html", title = "Profile")
+
+@app.route('/profileUpdater', methods = ['POST'])
+def handleUpdate():
+    if request.method == 'POST':
+        formData = request.form
+        
+        first = formData['fname']
+        last = formData['lname']
+        email = formData['email']
+        password = formData['password']
+        passwordConfirm = formData['cpass']
+
+        msg = ""
+
+        if first: cur.execute("UPDATE testLogins SET firstName = (%s) WHERE email = (%s)",(first, session['email'],))
+        if last: cur.execute("UPDATE testLogins SET lastName = (%s) WHERE email = (%s)",(last, session['email'],))
+
+        if password:
+            if not validPassword(password, passwordConfirm): msg += "Password and confirmation must be the same <br/>"
+            else: cur.execute("UPDATE testLogins SET password = (%s) WHERE email = (%s)",(password, session['email'],))
+        
+        if email:
+            if not validEmail(email): msg += "Email is not a valid address <br/>"
+            else:
+                cur.execute("UPDATE testLogins SET email = (%s) WHERE email = (%s)",(email, session['email'],))
+                session['email'] = email
+
+        if not msg:
+            flash("Saved Changes!")
+        else:
+            flash(msg)
+    
+    return redirect("profile", code=301)
+  
 # app.run(host='0.0.0.0', port=8000)
 # not necessary to run in container according to docker documentation
+

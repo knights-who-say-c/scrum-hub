@@ -14,6 +14,17 @@
     </div>
   </div>
 
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class=flashes>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+  {% block body %}{% endblock %}
+
   <div style="text-align: center;">
     <img src="static/default-avatar.png" alt="Profile Picture" class="image">
     <button >Change Picture</button>
@@ -32,10 +43,10 @@
       <input id="text-form-email" type="text" name="email"><br/>
 
       <label for="text-form-password">Password: </label>
-      <input id="text-form-password" type="text" name="password"><br/>
+      <input id="text-form-password" type="password" name="password"><br/>
 
       <label for="text-form-cpass">Confirm Password: </label>
-      <input id="text-form-cpass" type="text" name="cpass"><br/>
+      <input id="text-form-cpass" type="password" name="cpass"><br/>
 
       <input type="submit" value="Save Changes">
     </form>

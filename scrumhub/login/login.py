@@ -1,9 +1,6 @@
 from flask import *
 import os
 import psycopg2
-
-import os
-import psycopg2
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -15,6 +12,7 @@ cur = database.cursor()
 database.autocommit = True
 
 cur.execute("CREATE TABLE IF NOT EXISTS testLogins (firstName text, lastName text, email text, password text)")
+cur.execute("CREATE TABLE IF NOT EXISTS testUploads (fileName text, file bytea, extension text, simpleName text)")
 
 # session == user currently logged in's information
 session['email'] = ""
@@ -32,15 +30,6 @@ def validPassword(password, confirm):
 
 def authenticate(email, password):
    return False
-
-DATABASE_URL = os.environ['DATABASE_URL']
-DATABASE_URL = "postgres://wrwgrvzkfihtdb:bec460c350a6b77c2cd4bddd0484cdeef19b0a3a1a4660ae28e4b333936edcd0@ec2-34-233-187-36.compute-1.amazonaws.com:5432/dbdb4ogu09rgqg"
-database = psycopg2.connect(DATABASE_URL, sslmode='require')
-cur = database.cursor()
-database.autocommit = True
-
-cur.execute("CREATE TABLE IF NOT EXISTS testLogins (firstName text, lastName text, email text, password text)")
-cur.execute("CREATE TABLE IF NOT EXISTS testUploads (fileName text, file bytea, extension text, simpleName text)")
 
 def escapeHTML(string):
     string = string.replace('&', "&amp;")

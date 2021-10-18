@@ -36,7 +36,8 @@ def authenticate(email, password):
 
 @app.route('/login')
 def login():
-    return render_template("login.html", title = "Log In")
+    if request.method == 'POST':
+    return render_template("login.html", title = "Log In", feedback = msg)
 
 @app.route('/register')
 def register():
@@ -72,15 +73,6 @@ def handleRegister():
         last = formData['lastName']
 
         email = formData['email']
-        password = formData['password']
-        passwordConfirm = formData['passwordConfirm']
-
-        msg = ""
-        if not validPassword(password, passwordConfirm):
-            msg += "Password and confirmation must be the same <br/>"
-
-        if not validEmail(email):
-            msg += "Email is not a valid address <br/>"
 
         cur.execute("SELECT email FROM testLogins WHERE email = %s", (email,))
         existing = cur.fetchone()

@@ -16,4 +16,4 @@ CMD gunicorn -b 0.0.0.0:$PORT scrumhub.login.login:app
 
 FROM base as test
 
-RUN python -m unittest app/tests/heroku/PostgresTest.py
+CMD python -m unittest app/tests/database/*

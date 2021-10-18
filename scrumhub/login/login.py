@@ -15,7 +15,7 @@ cur.execute("CREATE TABLE IF NOT EXISTS testLogins (firstName text, lastName tex
 cur.execute("CREATE TABLE IF NOT EXISTS testUploads (fileName text, file bytea, extension text, simpleName text)")
 
 # session == user currently logged in's information
-session['email'] = ""
+# session['email'] = ""
 
 def validEmail(email):
     at = email.find("@")
@@ -54,7 +54,7 @@ def authenticate(email, password):
 
 @app.route('/')
 def index():
-    return home()
+    return redirect("home", code=301)
 
 @app.route('/home')
 def home():

@@ -48,6 +48,7 @@ def handleLogin():
         formData = request.form
 
         email = formData['email']
+        session["email"] = email
         password = formData['password']
 
         msg = ""

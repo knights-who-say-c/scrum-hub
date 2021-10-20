@@ -60,6 +60,10 @@ def index():
 def home():
     return render_template("home.html", title = "Home Page")
 
+@app.route('/newtask')
+def newtask():
+    return render_template("newtask.html", title = "Home Page")
+
 @app.route('/login')
 def login():
     return render_template("login.html", title = "Log In")

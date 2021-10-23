@@ -3,7 +3,7 @@ import os
 import psycopg2
 from werkzeug.utils import secure_filename
 
-import task
+from scrumhub.login import task
 
 app = Flask(__name__)
 app.secret_key = "testkey1"

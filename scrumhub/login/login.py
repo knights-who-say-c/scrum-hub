@@ -32,7 +32,15 @@ def validPassword(password, confirm):
     return length and confirmation
 
 def authenticate(email, password):
-   return False
+    cur.execute("SELECT email FROM testLogins WHERE email = %s", (email,))
+    existing = cur.fetchone()
+    print(existing)
+    if not existing:
+        return False
+
+    cur.execute("SELECT * FROM testlogins WHERE email = %s", (email,))
+    stored = cur.fetchone()[3]
+    return stored == password
 
 def escapeHTML(string):
     string = string.replace('&', "&amp;")
@@ -51,9 +59,6 @@ def validPassword(password, confirm):
     confirmation = password == confirm
     
     return length and confirmation
-
-def authenticate(email, password):
-   return False
 
 @app.route('/')
 def index():
@@ -83,8 +88,16 @@ def register():
 
 @app.route('/loginRequest', methods = ['POST'])
 def handleLogin():
-   
-    return render_template("login.html", title = "Log In", feedback = "Login not implemented yet")
+    formData = request.form
+
+    email = formData['email']
+    password = formData['password']
+    
+    if authenticate(email, password):
+        session['email'] = email
+        return redirect("home", code=301)
+    else:
+        render_template("login.html", title = "Log In", feedback = "Invalid username and/or password combination")
 
 @app.route('/registerRequest', methods = ['POST'])
 def handleRegister():

@@ -198,6 +198,6 @@ def handleUpdate():
     
     return redirect("profile", code=301)
   
-app.run(host='0.0.0.0', port=8000)
+# app.run(host='0.0.0.0', port=8000)
 # not necessary to run in container according to docker documentation
 

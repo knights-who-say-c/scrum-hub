@@ -3,6 +3,8 @@ import os
 import psycopg2
 from werkzeug.utils import secure_filename
 
+from scrumhub.login import task
+
 app = Flask(__name__)
 app.secret_key = "testkey1"
 
@@ -13,6 +15,7 @@ database.autocommit = True
 
 cur.execute("CREATE TABLE IF NOT EXISTS testLogins (firstName text, lastName text, email text, password text)")
 cur.execute("CREATE TABLE IF NOT EXISTS testUploads (fileName text, file bytea, extension text, simpleName text)")
+cur.execute("CREATE TABLE IF NOT EXISTS testTasks (title text, description text, label text, assignee text, dueDate date)")
 
 # session == user currently logged in's information
 # session['email'] = ""
@@ -60,6 +63,16 @@ def index():
 def home():
     return render_template("home.html", title = "Home Page")
 
+@app.route('/newtask')
+def newtask():
+    return render_template("newtask.html", title = "Home Page")
+
+@app.route('/submitNewTask', methods = ['POST'])
+def handleNewTask():
+    formData = request.form
+    task.handleNewTask(formData, cur)
+    return redirect("project", code=301)
+    
 @app.route('/login')
 def login():
     return render_template("login.html", title = "Log In")
@@ -115,8 +128,9 @@ def project():
     for x in uploadedFiles:
         htmlInject += ("<p>" + x[3] + "." + x[2] + "</p>")
 
-    print(htmlInject)
-    
+    cur.execute("SELECT * FROM testTasks")
+    tasks = cur.fetchall()
+
     return render_template("project.html", title = "Project Page", files = htmlInject)
 
 @app.route('/project/fileUpload')

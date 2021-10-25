@@ -1,0 +1,66 @@
+<html>
+	<head>
+	<title>{{title}}</title>
+	 <link rel="stylesheet" href="/static/main.css">
+
+	</head>
+
+	<body>
+
+		<div class = "header">
+
+			<!-- Logo on top left corner. Plain text for now -->
+            <div class="sidenav">
+                <a href="#" style="text-align: center;">Name</a>
+				<a href="#" style="text-align: center;">Due Dates</a>
+				<a href="#" style="text-align: center;">Tasks</a>
+				<a href="#" style="text-align: center;">Meetings Tool</a>
+				<a href="#" style="padding-top:300%;text-align: center;">Settings</a>
+            </div>
+
+			<div class="newlogo">
+			Scrum Hub
+            <a href="#" style="float: right;font-size: large;padding: 20;"> Add  Collaborator</a>
+			</div>
+
+            
+
+		</div>
+    
+	<div class = "main">
+        <div class="mainback">
+            <div class="maincreate">
+		
+
+        <form action = /submitNewTask method = "POST" enctype="multipart/form-data">
+				
+            
+            <label for="title">Title</label><br/>
+            <input type="text" id="title" name="title" required><br/>
+
+            <label for="description">Description:</label><br/>
+            <input type="text" id="description" name="description" required><br/>
+
+            <label for="label">Label</label><br/>
+            <input type="text" id="label" name="label" required><br/>
+
+            <label for="assignee">Assignee</label><br/>
+            <input type="text" id="assignee" name="assignee" required><br/>
+
+            <label for="due">Due Date</label><br/>
+            <input type="date" id="due" name="due" required><br/>
+
+            <input type="submit" value="Submit">
+
+        </form>	
+            </div>
+        </div>
+
+	</div>
+
+
+
+<script src="../static/project.js"></script>
+</body>
+
+</html>

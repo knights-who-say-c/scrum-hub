@@ -18,6 +18,11 @@ class ProjectTest(unittest.TestCase):
 
         self.assertEqual(results[0][1:], (name, owner, []))
 
+    def test_create_repo(self):
+        response = Project.create_repo('testrepo')
+        print(response)
+        self.assertIsNotNone(response)
+
 
 if __name__ == '__main__':
     unittest.main()

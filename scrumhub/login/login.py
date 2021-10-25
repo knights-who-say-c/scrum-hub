@@ -131,7 +131,17 @@ def project():
     cur.execute("SELECT * FROM testTasks")
     tasks = cur.fetchall()
 
-    return render_template("project.html", title = "Project Page", files = htmlInject)
+    htmlInjectTasks = ""
+    for x in tasks:
+        htmlInjectTasks += ("<p>" +  x[0] + "<br/>" +  x[1] + "<br/>" +  x[2] + "<br/>" +  x[3] + "<br/>" +  str(x[4]) + "<br/>"  +  "</p>")
+        # x[0] + "." + x[1] + "."  + x[2] + "." + x[3] + "."  + x[4] +
+ 
+ 
+    cur.execute("SELECT * FROM testTasks")
+    tasks = cur.fetchall()
+ 
+    return render_template("project.html", title = "Project Page", btasks = htmlInjectTasks, files = htmlInject)
+
 
 @app.route('/project/fileUpload')
 def fileUpload():

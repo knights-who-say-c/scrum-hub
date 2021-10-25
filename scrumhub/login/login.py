@@ -57,7 +57,7 @@ def authenticate(email, password):
 
 @app.route('/')
 def index():
-    return home()
+    return redirect("home", code=301)
 
 @app.route('/home')
 def home():

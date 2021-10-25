@@ -9,6 +9,6 @@ def handleNewTask(formData, cur):
         dueDate = formData['due']
         
 
-        cur.execute("INSERT INTO testTasks (title, description, label, assignee, dueDate) VALUES(%s, %s, %s, %s, %s)", (title, description, label, assignee, dueDate))
+        cur.execute("INSERT INTO testtasks (title, description, label, assignee, dueDate) VALUES(%s, %s, %s, %s, %s)", (title, description, label, assignee, dueDate))
       
     

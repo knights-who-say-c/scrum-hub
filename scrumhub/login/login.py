@@ -6,7 +6,8 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.secret_key = "testkey1"
 
-DATABASE_URL = os.environ['DATABASE_URL']
+# DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_URL = "postgres://wrwgrvzkfihtdb:bec460c350a6b77c2cd4bddd0484cdeef19b0a3a1a4660ae28e4b333936edcd0@ec2-34-233-187-36.compute-1.amazonaws.com:5432/dbdb4ogu09rgqg"
 database = psycopg2.connect(DATABASE_URL, sslmode='require')
 cur = database.cursor()
 database.autocommit = True
@@ -15,7 +16,7 @@ cur.execute("CREATE TABLE IF NOT EXISTS testLogins (firstName text, lastName tex
 cur.execute("CREATE TABLE IF NOT EXISTS testUploads (fileName text, file bytea, extension text, simpleName text)")
 
 # session == user currently logged in's information
-session['email'] = ""
+# session['email'] = ""
 
 def validEmail(email):
     at = email.find("@")
@@ -51,6 +52,16 @@ def validPassword(password, confirm):
 
 def authenticate(email, password):
    return False
+
+def handleNewTask2(formData, cur):
+        title = formData['title']
+        description = formData['description']
+        label = formData['label']
+        assignee = formData['assignee']
+        dueDate = formData['due']
+        
+
+        cur.execute("INSERT INTO testTasks (title, description, label, assignee, dueDate) VALUES(%s, %s, %s, %s, %s)", (title, description, label, assignee, dueDate))
 
 @app.route('/')
 def index():
@@ -107,6 +118,16 @@ def handleRegister():
 def crproject():
     return render_template("crproject.html", title = "Create New Project")
 
+@app.route('/newtask')
+def newtask():
+    return render_template("newtask.html", title = "Home Page")
+
+@app.route('/submitNewTask', methods = ['POST'])
+def handleNewTask():
+    formData = request.form
+    handleNewTask2(formData, cur)
+    return redirect("project", code=301)
+
 @app.route('/project')
 def project():
     cur.execute("SELECT * FROM testUploads")
@@ -115,9 +136,19 @@ def project():
     for x in uploadedFiles:
         htmlInject += ("<p>" + x[3] + "." + x[2] + "</p>")
 
-    print(htmlInject)
-    
-    return render_template("project.html", title = "Project Page", files = htmlInject)
+    cur.execute("SELECT * FROM testTasks")
+    tasks = cur.fetchall()
+
+    htmlInjectTasks = ""
+    for x in tasks:
+        htmlInjectTasks += ("<p>" +  x[0] + "<br/>" +  x[1] + "<br/>" +  x[2] + "<br/>" +  x[3] + "<br/>" +  str(x[4]) + "<br/>"  +  "</p>")
+        # x[0] + "." + x[1] + "."  + x[2] + "." + x[3] + "."  + x[4] +
+
+
+    cur.execute("SELECT * FROM testTasks")
+    tasks = cur.fetchall()
+
+    return render_template("project.html", title = "Project Page", btasks = htmlInjectTasks, files = htmlInject)
 
 @app.route('/project/fileUpload')
 def fileUpload():

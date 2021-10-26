@@ -1,5 +1,4 @@
 # task.py
-from flask import *
 
 def handleNewTask(formData, cur):
         title = formData['title']

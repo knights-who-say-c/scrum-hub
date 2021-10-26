@@ -10,9 +10,8 @@ RUN pip install python-dotenv
 
 COPY . .
 
-CMD gunicorn -b 0.0.0.0:5000 scrumhub.login.login:app
-# CMD gunicorn scrumhub.login.login:app
-# CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0"]
+CMD gunicorn -b 0.0.0.0:5000 scrumhub.main:app
+
 
 # FROM base as test
 

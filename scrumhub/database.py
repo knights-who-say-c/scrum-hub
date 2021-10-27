@@ -31,7 +31,7 @@ def getTasks():
     return cur.fetchall()
 
 def uploadFile(filename, upload, extension, name):
-    cur.execute("INSERT INTO testUploads (fileName, file, extension, simpleName) VALUES(%s, %s, %s, %s)", (filename, upload, extension, name))
+    cur.execute("INSERT INTO Uploads (fileName, file, extension, simpleName) VALUES(%s, %s, %s, %s)", (filename, upload, extension, name))
 
 def getUploadedFiles():
     cur.execute("SELECT * FROM Uploads")

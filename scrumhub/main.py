@@ -31,16 +31,7 @@ def homePage():
         displayName = session['displayName']
     return render_template("home.html", name = displayName)
 
-@app.route('/newtask')
-def newTaskPage():
-    return render_template("newtask.html", title = "New Task")
 
-@app.route('/submitNewTask', methods = ['POST'])
-def handleNewTask():
-    formData = request.form
-    task.handleNewTask(formData, database.cur)
-    return redirect("project", code=301)
-    
 @app.route('/login', methods = ['GET', 'POST'])
 def loginPage():
     if request.method == "GET":
@@ -55,40 +46,40 @@ def loginPage():
         else:
             return render_template("login.html", title = "Log In", feedback = "Invalid username and/or password combination")
 
-@app.route('/register')
+@app.route('/register', methods = ["GET", "POST"])
 def registrationPage():
-    return render_template("login.html", title = "Sign Up")
-
-@app.route('/registerRequest', methods = ['POST'])
-def handleRegister():
-    if request.method == 'POST':
+    if request.method == "GET":
+        return render_template("login.html", title = "Sign Up")
+    elif request.method == 'POST':
         formData = request.form
-        msg = login.handleRegister(formData)
-        
-        return render_template("login.html", title = "Sign Up", feedback = msg)
+        msg = login.handleRegister(formData) 
+        return render_template("login.html", title = "Sign Up", feedback = msg)    
 
 @app.route('/crproject')
 def createProjectPage():
-    return render_template("crproject.html", title = "Create New Project")
+    displayName = "Not logged in"
+    if 'displayName' in session:
+        displayName = session['displayName']
+    return render_template("crproject.html", title = "Create New Project", name = displayName)
 
 @app.route('/project')
 def projectPage():
     uploadedFiles = database.getUploadedFiles()
-    htmlInject = ""
+    injectedFiles = ""
     for x in uploadedFiles:
-        htmlInject += ("<p>" + x[3] + "." + x[2] + "</p>")
+        injectedFiles += ("<p>" + x[3] + "." + x[2] + "</p>")
 
-    htmlInjectFiles = task.HTMLInjection()    
+    injectedTasks = task.HTMLInjection()
+
+    displayName = "Not logged in"
+    if 'displayName' in session:
+        displayName = session['displayName']
  
-    return render_template("project.html", title = "Project Page", btasks = htmlInjectTasks, files = htmlInject)
+    return render_template("project.html", title = "Project Page", btasks = injectedTasks, files = injectedFiles, name = displayName)
 
 
-@app.route('/project/fileUpload')
+@app.route('/project/fileUpload', methods = ["GET", "POST"])
 def fileUploadPage():
-    return render_template("fileUpload.html", title = "File Upload")
-
-@app.route('/project/fileUploadRequest', methods = ['POST'])
-def fileUploadRequest():
     if request.method == "POST":
         formData = request.form
 
@@ -102,16 +93,27 @@ def fileUploadRequest():
         extension = filename.split(".")[-1]
 
         database.uploadFile(filename, upload, extension, name)
-        
-    return project()
+        return redirect("/project", code=301)
+    elif request.method == "GET":
+        return render_template("fileUpload.html", title = "File Upload")
 
-@app.route('/profile')
+@app.route("/project/newTask", methods = ["GET", "POST"])
+def newTask():
+    if request.method == "GET":
+        displayName = "Not logged in"
+        if 'displayName' in session:
+            displayName = session['displayName']
+        return render_template("newTask.html", name = displayName)
+    elif request.method == "POST":
+        formData = request.form
+        task.createTask(formData, database.cur)
+        return redirect("/project", code=301)
+
+@app.route('/profile', methods = ["GET", "POST"])
 def profilePage():
-    return render_template("profile.html", title = "Profile")
-
-@app.route('/profileUpdater', methods = ['POST'])
-def handleProfileUpdate():
-    if request.method == 'POST':
+    if request.method == "GET":
+        return render_template("profile.html", title = "Profile")
+    elif request.method == "POST":
         formData = request.form
         
         first = formData['fname']
@@ -120,7 +122,7 @@ def handleProfileUpdate():
         password = formData['password']
         passwordConfirm = formData['cpass']
 
-        msg = ""
+        msg = "Saved Changes!"
 
         if first:
             database.updateProfile("firstName", first, session["email"])
@@ -134,18 +136,17 @@ def handleProfileUpdate():
                 database.updateProfile("password", password, session["email"])
                 
         if email:
-            if not validEmail(email): msg += "Email is not a valid address <br/>"
-            
+            if not validEmail(email):
+                msg += "Email is not a valid address <br/>"
             else:
                 database.updateProfile("email", email, session["email"])
                 session['email'] = email
 
-        if not msg:
-            flash("Saved Changes!")
-        else:
-            flash(msg)
+
+        flash(msg)
     
-    return redirect("profile", code=301)
+    return redirect("/profile", code=301)
+    
   
 # app.run(host='0.0.0.0', port=8000)
 # not necessary to run in container according to docker documentation

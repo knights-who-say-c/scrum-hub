@@ -17,7 +17,7 @@ def authenticate(email, password):
     if not database.userExists(email):
         return False
 
-    return database.getAccount[3] == password
+    return database.getAccount(email)[3] == password
 
 def handleRegister(formData):
     first = formData['firstName']

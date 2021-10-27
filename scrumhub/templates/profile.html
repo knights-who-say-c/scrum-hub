@@ -5,13 +5,7 @@
 <body>
   <div class="header">
     <!-- Logo on top left corner. Plain text for now -->
-    <div class="logo"> Scrum Hub </div>
-    <!-- Navigation buttons on top right corner. "Home" -->
-    <div style = "float:right">
-      <div class = "inline-button"> 
-        <a href = "/home"> Home </a>
-      </div>
-    </div>
+    <div class="logo"> <a href = "/home"> Scrum Hub </a> </div>   
   </div>
 
   {% with messages = get_flashed_messages() %}
@@ -32,7 +26,7 @@
 
   <div style="text-align: center;">
     <br/>
-    <form action="/profileUpdater" method="POST">
+    <form action="/profile" method="POST">
       <label for="text-form-fname">First Name: </label>
       <input id="text-form-fname" type="text" name="fname"><br/>
 

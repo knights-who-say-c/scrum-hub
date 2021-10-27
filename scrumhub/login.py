@@ -14,11 +14,10 @@ def validPassword(password, confirm):
     return length and confirmation
 
 def authenticate(email, password):
-    if not database.userExists(email)
+    if not database.userExists(email):
         return False
 
-    stored = database.getAccount[3]
-    return stored == password
+    return database.getAccount[3] == password
 
 def handleRegister(formData):
     first = formData['firstName']
@@ -35,7 +34,7 @@ def handleRegister(formData):
     if not validEmail(email):
         msg += "Email is not a valid address <br/>"
 
-    if database.userExists(email)
+    if database.userExists(email):
         msg = "Account already exists for " + email
 
     if not msg:

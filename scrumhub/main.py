@@ -78,11 +78,7 @@ def projectPage():
     for x in uploadedFiles:
         htmlInject += ("<p>" + x[3] + "." + x[2] + "</p>")
 
-    tasks = database.getTasks()
-
-    htmlInjectTasks = ""
-    for x in tasks:
-        htmlInjectTasks += ("<p>" +  x[0] + "<br/>" +  x[1] + "<br/>" +  x[2] + "<br/>" +  x[3] + "<br/>" +  str(x[4]) + "<br/>"  +  "</p>")
+    htmlInjectFiles = task.HTMLInjection()    
  
     return render_template("project.html", title = "Project Page", btasks = htmlInjectTasks, files = htmlInject)
 

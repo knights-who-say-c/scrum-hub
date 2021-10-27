@@ -14,14 +14,10 @@ def validPassword(password, confirm):
     return length and confirmation
 
 def authenticate(email, password):
-    database.cur.execute("SELECT email FROM Logins WHERE email = %s", (email,))
-    existing = database.cur.fetchone()
-    print(existing)
-    if not existing:
+    if not database.userExists(email)
         return False
 
-    database.cur.execute("SELECT * FROM logins WHERE email = %s", (email,))
-    stored = database.cur.fetchone()[3]
+    stored = database.getAccount[3]
     return stored == password
 
 def handleRegister(formData):
@@ -39,19 +35,11 @@ def handleRegister(formData):
     if not validEmail(email):
         msg += "Email is not a valid address <br/>"
 
-    database.cur.execute("SELECT email FROM Logins WHERE email = %s", (email,))
-    existing = database.cur.fetchone()
-
-    if existing:
+    if database.userExists(email)
         msg = "Account already exists for " + email
 
     if not msg:
-        database.cur.execute("INSERT INTO Logins (firstName, lastName, email, password) VALUES(%s, %s, %s, %s)", (first, last, email, password))
+        database.createAccount(first, last, email, password)
         msg = "Account created for " + email
 
     return msg
-
-def handleLogin(formData):
-    email = formData['email']
-    password = formData['password']
-    return authenticate(email, password)

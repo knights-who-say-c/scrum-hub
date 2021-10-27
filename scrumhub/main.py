@@ -9,11 +9,9 @@ from scrumhub import login
 from scrumhub import database
 from scrumhub.database import getUploadedFiles
 
+
 app = Flask(__name__)
 app.secret_key = "testkey1"
-
-# session == user currently logged in's information
-# session['email'] = ""
 
 def escapeHTML(string):
     string = string.replace('&', "&amp;")
@@ -28,11 +26,14 @@ def indexPage():
 
 @app.route('/home')
 def homePage():
-    return render_template("home.html", title = "Home Page")
+    displayName = "Not logged in"
+    if 'displayName' in session:
+        displayName = session['displayName']
+    return render_template("home.html", name = displayName)
 
 @app.route('/newtask')
 def newTaskPage():
-    return render_template("newtask.html", title = "Home Page")
+    return render_template("newtask.html", title = "New Task")
 
 @app.route('/submitNewTask', methods = ['POST'])
 def handleNewTask():
@@ -40,22 +41,23 @@ def handleNewTask():
     task.handleNewTask(formData, database.cur)
     return redirect("project", code=301)
     
-@app.route('/login')
+@app.route('/login', methods = ['GET', 'POST'])
 def loginPage():
-    return render_template("login.html", title = "Log In")
+    if request.method == "GET":
+        return render_template("login.html", title = "Log In")
+    else:
+        formData = request.form
+        if login.authenticate(formData['email'], formData['password']):
+            email = formData['email']
+            session['email'] = email
+            session['displayName'] = database.getFirstName(email)
+            return redirect("home", code=301)
+        else:
+            return render_template("login.html", title = "Log In", feedback = "Invalid username and/or password combination")
 
 @app.route('/register')
 def registrationPage():
     return render_template("login.html", title = "Sign Up")
-
-@app.route('/loginRequest', methods = ['POST'])
-def handleLogin():
-    formData = request.form
-    if login.handleLogin(formData):
-        session['email'] = formData['email']
-        return redirect("home", code=301)
-    else:
-        return render_template("login.html", title = "Log In", feedback = "Invalid username and/or password combination")
 
 @app.route('/registerRequest', methods = ['POST'])
 def handleRegister():
@@ -76,17 +78,11 @@ def projectPage():
     for x in uploadedFiles:
         htmlInject += ("<p>" + x[3] + "." + x[2] + "</p>")
 
-    database.cur.execute("SELECT * FROM Tasks")
-    tasks = database.cur.fetchall()
+    tasks = database.getTasks()
 
     htmlInjectTasks = ""
     for x in tasks:
         htmlInjectTasks += ("<p>" +  x[0] + "<br/>" +  x[1] + "<br/>" +  x[2] + "<br/>" +  x[3] + "<br/>" +  str(x[4]) + "<br/>"  +  "</p>")
-        # x[0] + "." + x[1] + "."  + x[2] + "." + x[3] + "."  + x[4] +
- 
- 
-    database.cur.execute("SELECT * FROM Tasks")
-    tasks = database.cur.fetchall()
  
     return render_template("project.html", title = "Project Page", btasks = htmlInjectTasks, files = htmlInject)
 
@@ -109,13 +105,7 @@ def fileUploadRequest():
 
         extension = filename.split(".")[-1]
 
-        database.cur.execute("INSERT INTO testUploads (fileName, file, extension, simpleName) VALUES(%s, %s, %s, %s)", (filename, upload, extension, name))
-        database.cur.execute("SELECT * FROM Uploads where fileName = %s", (filename,))
-        result = database.cur.fetchone()
-        filePath = result[3] + "." + result[2]
-
-        with open(filePath, "wb") as testFile:
-            testFile.write(result[1])
+        database.uploadFile(filename, upload, extension, name)
         
     return project()
 
@@ -136,17 +126,22 @@ def handleProfileUpdate():
 
         msg = ""
 
-        if first: database.cur.execute("UPDATE Logins SET firstName = (%s) WHERE email = (%s)",(first, session['email'],))
-        if last: database.cur.execute("UPDATE Logins SET lastName = (%s) WHERE email = (%s)",(last, session['email'],))
+        if first:
+            database.updateProfile("firstName", first, session["email"])
+        if last:
+            database.updateProfile("lastName", last, session["email"])
 
         if password:
-            if not validPassword(password, passwordConfirm): msg += "Password and confirmation must be the same <br/>"
-            else: database.cur.execute("UPDATE Logins SET password = (%s) WHERE email = (%s)",(password, session['email'],))
-        
+            if not validPassword(password, passwordConfirm):
+                msg += "Password and confirmation must be the same <br/>"
+            else:
+                database.updateProfile("password", password, session["email"])
+                
         if email:
             if not validEmail(email): msg += "Email is not a valid address <br/>"
+            
             else:
-                database.cur.execute("UPDATE Logins SET email = (%s) WHERE email = (%s)",(email, session['email'],))
+                database.updateProfile("email", email, session["email"])
                 session['email'] = email
 
         if not msg:

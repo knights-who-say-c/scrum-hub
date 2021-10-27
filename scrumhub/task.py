@@ -7,7 +7,6 @@ def handleNewTask(formData, cur):
         assignee = formData['assignee']
         dueDate = formData['due']
         
-
-        cur.execute("INSERT INTO testtasks (title, description, label, assignee, dueDate) VALUES(%s, %s, %s, %s, %s)", (title, description, label, assignee, dueDate))
+        database.createTask(title, description, label, assignee, dueDate)
       
     

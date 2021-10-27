@@ -1,4 +1,4 @@
-# login.py
+# login.py - Account registration, authentication, and profiles
 
 from scrumhub import database
 
@@ -13,13 +13,14 @@ def validPassword(password, confirm):
     
     return length and confirmation
 
-def authenticate(email, password):
+def authenticate(formData):
+    email = formData["email"]
     if not database.userExists(email):
         return False
 
-    return database.getAccount(email)[3] == password
+    return database.getAccount(email)[3] == formData["password"]
 
-def handleRegister(formData):
+def register(formData):
     first = formData['firstName']
     last = formData['lastName']
 
@@ -42,3 +43,35 @@ def handleRegister(formData):
         msg = "Account created for " + email
 
     return msg
+
+def updateProfile(formData):
+    formData = request.form
+        
+    first = formData['fname']
+    last = formData['lname']
+    email = formData['email']
+    password = formData['password']
+    passwordConfirm = formData['cpass']
+
+    msg = "Saved Changes!"
+
+    if first:
+        database.updateProfile("firstName", first, session["email"])
+    if last:
+        database.updateProfile("lastName", last, session["email"])
+
+    if password:
+        if not validPassword(password, passwordConfirm):
+            msg += "Password and confirmation must be the same <br/>"
+        else:
+            database.updateProfile("password", password, session["email"])
+            
+    if email:
+        if not validEmail(email):
+            msg += "Email is not a valid address <br/>"
+        else:
+            database.updateProfile("email", email, session["email"])
+            session['email'] = email
+    return msg
+    
+

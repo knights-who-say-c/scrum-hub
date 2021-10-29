@@ -1,9 +1,12 @@
+from datetime import datetime
+from datetime import date
 from flask import *
 import os
 import psycopg2
 from werkzeug.utils import secure_filename
 
 from scrumhub.login import task
+
 
 app = Flask(__name__)
 app.secret_key = "testkey1"
@@ -67,6 +70,32 @@ def index():
 @app.route('/home')
 def home():
     return render_template("home.html", title = "Home Page")
+
+@app.route('/duedate')
+def duedate():
+    
+    cur.execute("SELECT * FROM testTasks")
+    tasks = list(cur.fetchall())
+    dued = []
+    for i in tasks:
+        if str(i[4]) not in dued:
+            dued.append(str(i[4]))
+
+    htmlInjectTasks = ""
+    print(tasks)
+    dued.sort(key=lambda date: datetime.strptime(date,'%Y-%m-%d'))
+    today = date.today()
+    today = today.strftime("%Y-%m-%d")
+    # for x in dued:
+    #     htmlInjectTasks += ("<div>" +  x + "</div>")
+    for i in dued:
+        for x in tasks:
+            if i == str(x[4]):
+                if i <= today:
+                    htmlInjectTasks += ("<div class=" + "due" + ">" +  x[0] + "<br/>" +  x[1] + "<br/>" +  x[2] + "<br/>" +  x[3] + "<br/>" +  str(x[4]) + "<br/>"  + "OverDued" + "</div>")
+                else:
+                    htmlInjectTasks += ("<div>" +  x[0] + "<br/>" +  x[1] + "<br/>" +  x[2] + "<br/>" +  x[3] + "<br/>" +  str(x[4]) + "<br/>"  +  "</div>")
+    return render_template("duedate.html", title = "Due Dates Page", due = htmlInjectTasks)
 
 @app.route('/newtask')
 def newtask():

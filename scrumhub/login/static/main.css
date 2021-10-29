@@ -177,3 +177,19 @@ form > input[type=submit] {
 .container {
   padding: 2px 16px;
 }
+
+.rows {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    grid-template-rows: 100px 100px;
+    grid-gap: 10px;
+    padding: 50px;
+}
+
+.due{
+	border: 3px solid red;
+	border-style: dashed;
+	margin-left: auto;
+	height: fit-content;
+	margin-right:auto;
+}

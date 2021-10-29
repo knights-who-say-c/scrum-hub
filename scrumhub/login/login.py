@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import date
 from flask import *
 import os
 import psycopg2
@@ -10,8 +11,7 @@ from scrumhub.login import task
 app = Flask(__name__)
 app.secret_key = "testkey1"
 
-# DATABASE_URL = os.environ['DATABASE_URL']
-DATABASE_URL = "postgres://wrwgrvzkfihtdb:bec460c350a6b77c2cd4bddd0484cdeef19b0a3a1a4660ae28e4b333936edcd0@ec2-34-233-187-36.compute-1.amazonaws.com:5432/dbdb4ogu09rgqg"
+DATABASE_URL = os.environ['DATABASE_URL']
 database = psycopg2.connect(DATABASE_URL, sslmode='require')
 cur = database.cursor()
 database.autocommit = True
@@ -68,6 +68,7 @@ def home():
 
 @app.route('/duedate')
 def duedate():
+    
     cur.execute("SELECT * FROM testTasks")
     tasks = list(cur.fetchall())
     dued = []
@@ -78,12 +79,17 @@ def duedate():
     htmlInjectTasks = ""
     print(tasks)
     dued.sort(key=lambda date: datetime.strptime(date,'%Y-%m-%d'))
+    today = date.today()
+    today = today.strftime("%Y-%m-%d")
     # for x in dued:
     #     htmlInjectTasks += ("<div>" +  x + "</div>")
     for i in dued:
         for x in tasks:
             if i == str(x[4]):
-                htmlInjectTasks += ("<div>" +  x[0] + "<br/>" +  x[1] + "<br/>" +  x[2] + "<br/>" +  x[3] + "<br/>" +  str(x[4]) + "<br/>"  +  "</div>")
+                if i <= today:
+                    htmlInjectTasks += ("<div class=" + "due" + ">" +  x[0] + "<br/>" +  x[1] + "<br/>" +  x[2] + "<br/>" +  x[3] + "<br/>" +  str(x[4]) + "<br/>"  + "OverDued" + "</div>")
+                else:
+                    htmlInjectTasks += ("<div>" +  x[0] + "<br/>" +  x[1] + "<br/>" +  x[2] + "<br/>" +  x[3] + "<br/>" +  str(x[4]) + "<br/>"  +  "</div>")
     return render_template("duedate.html", title = "Due Dates Page", due = htmlInjectTasks)
 
 @app.route('/newtask')

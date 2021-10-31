@@ -3,6 +3,7 @@
 from flask import *
 import psycopg2
 from werkzeug.utils import secure_filename
+import datetime
 
 from scrumhub import task
 from scrumhub import login
@@ -59,7 +60,32 @@ def registrationPage():
         return render_template("login.html", title = "Sign Up")
     elif request.method == 'POST':
         msg = login.register(request.form) 
-        return render_template("login.html", title = "Sign Up", feedback = msg)    
+        return render_template("login.html", title = "Sign Up", feedback = msg)  
+
+@app.route('/duedate')
+def duedate():
+    
+    tasks = database.getTasks()
+    dued = []
+    for i in tasks:
+        if str(i[4]) not in dued:
+            dued.append(str(i[4]))
+
+    htmlInjectTasks = ""
+    print(tasks)
+    dued.sort(key=lambda date: datetime.strptime(date,'%Y-%m-%d'))
+    today = date.today()
+    today = today.strftime("%Y-%m-%d")
+    # for x in dued:
+    #     htmlInjectTasks += ("<div>" +  x + "</div>")
+    for i in dued:
+        for x in tasks:
+            if i == str(x[4]):
+                if i <= today:
+                    htmlInjectTasks += ("<div class=" + "due" + ">" +  x[0] + "<br/>" +  x[1] + "<br/>" +  x[2] + "<br/>" +  x[3] + "<br/>" +  str(x[4]) + "<br/>"  + "OverDued" + "</div>")
+                else:
+                    htmlInjectTasks += ("<div>" +  x[0] + "<br/>" +  x[1] + "<br/>" +  x[2] + "<br/>" +  x[3] + "<br/>" +  str(x[4]) + "<br/>"  +  "</div>")
+    return render_template("duedate.html", title = "Due Dates Page", due = htmlInjectTasks)  
 
 @app.route('/crproject')
 def createProjectPage():

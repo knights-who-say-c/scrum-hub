@@ -107,7 +107,7 @@ def profilePage():
     if request.method == "GET":
         return render_template("profile.html", title = "Profile")
     elif request.method == "POST":
-        msg = login.updateProfile(request.form)
+        msg = login.updateProfile(request.form, session)
         flash(msg)
         return redirect("/profile", code=301)
     

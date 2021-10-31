@@ -44,9 +44,7 @@ def register(formData):
 
     return msg
 
-def updateProfile(formData):
-    formData = request.form
-        
+def updateProfile(formData, session):        
     first = formData['fname']
     last = formData['lname']
     email = formData['email']
@@ -56,21 +54,21 @@ def updateProfile(formData):
     msg = "Saved Changes!"
 
     if first:
-        database.updateProfile("firstName", first, session["email"])
+        database.updateFirstName(first, session["email"])
     if last:
-        database.updateProfile("lastName", last, session["email"])
+        database.updateLastName(last, session["email"])
 
     if password:
         if not validPassword(password, passwordConfirm):
             msg += "Password and confirmation must be the same <br/>"
         else:
-            database.updateProfile("password", password, session["email"])
+            database.updatePassword(password, session["email"])
             
     if email:
         if not validEmail(email):
             msg += "Email is not a valid address <br/>"
         else:
-            database.updateProfile("email", email, session["email"])
+            database.updateEmail(email, session["email"])
             session['email'] = email
     return msg
     

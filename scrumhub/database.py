@@ -37,8 +37,17 @@ def getUploadedFiles():
     cur.execute("SELECT * FROM Uploads")
     return cur.fetchall()
 
-def updateProfile(category, newVal, email):
-    cur.execute("UPDATE Logins SET %s = %s WHERE email = %s", (category, newVal, email))
+def updatePassword(newVal, email):
+    cur.execute("UPDATE Logins SET password = %s WHERE email = %s", (newVal, email))
+
+def updateFirstName(newVal, email):
+    cur.execute("UPDATE Logins SET firstname = %s WHERE email = %s", (newVal, email))
+
+def updateLastName(newVal, email):
+    cur.execute("UPDATE Logins SET lastname = %s WHERE email = %s", (newVal, email))
+
+def updateEmail(newVal, email):
+    cur.execute("UPDATE Logins SET email = %s WHERE email = %s", (newVal, email))
 
 def createTask(title, description, label, assignee, dueDate):
     cur.execute("INSERT INTO Tasks (title, description, label, assignee, dueDate) VALUES(%s, %s, %s, %s, %s)", (title, description, label, assignee, dueDate))

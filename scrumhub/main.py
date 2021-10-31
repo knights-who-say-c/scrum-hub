@@ -3,6 +3,7 @@
 from flask import *
 import psycopg2
 from werkzeug.utils import secure_filename
+import datetime
 
 from scrumhub import task
 from scrumhub import login
@@ -64,8 +65,7 @@ def registrationPage():
 @app.route('/duedate')
 def duedate():
     
-    cur.execute("SELECT * FROM testTasks")
-    tasks = list(cur.fetchall())
+    tasks = database.getTasks()
     dued = []
     for i in tasks:
         if str(i[4]) not in dued:

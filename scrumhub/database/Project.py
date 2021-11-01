@@ -1,3 +1,6 @@
+import base64
+import tempfile
+
 import boto3
 import json
 import os
@@ -96,7 +99,7 @@ def get_projects(project_id=None, project_name=None, owner_name=None):
 
     sql_string += " AND ".join(args)
 
-    conn = pg.connect(DATABASE_URL, password=DATABASE_PASSWORD, sslmode='require')
+    conn = pg.connect(DATABASE_URL, password=DATABASE_PASSWORD, sslmode='prefer')
     conn.autocommit = True
     results = []
 
@@ -112,20 +115,116 @@ def get_projects(project_id=None, project_name=None, owner_name=None):
     return results
 
 
-def create_repo(name):
-    s3_bucket = os.environ.get('S3_BUCKET')
-    file_name = request.args.get('file_name')
-    file_type = request.args.get('file_type')
-    repo_name = name
-    repo_desc = ''
+def create_repo(repo_name, repo_desc=''):
     tags = {}
-
-    codecommit = boto3.client('codecommit')
-    response = codecommit.create_repository(repositoryName=repo_name,
-                                            repositoryDescriptio=repo_desc,
-                                            tags=tags)
+    client = boto3.client('codecommit')
+    response = client.create_repository(repositoryName=repo_name,
+                                        repositoryDescription=repo_desc,
+                                        tags=tags)
+    response['repositoryMetadata']['defaultBranchName'] = 'master'
 
     return response
+
+
+def get_repo(repo_name):
+    client = boto3.client('codecommit')
+    response = client.get_repository(repositoryName=repo_name)
+
+    return response
+
+
+def delete_repo(repo_name):
+    client = boto3.client('codecommit')
+    response = client.delete_repository(repositoryName=repo_name)
+
+    return response
+
+
+def put_file(repo_name, branch_name, parent_commit_id, file_path, file_content):
+    """Adds or updates a file in a branch in an AWS CodeCommit repository, and
+    generates a commit for the addition in the specified branch.
+
+    Parameters
+    ----------
+    repo_name : str
+        The name of the repository where you want to add or update the file.
+    branch_name : str
+        The name of the branch where you want to add or update the file. If
+        this is an empty repository, this branch is created.
+    parent_commit_id : str
+        The full commit ID of the head commit in the branch where you want to
+        add or update the file. If this is an empty repository, no commit ID is
+        required. If this is not an empty repository, a commit ID is required.
+    file_path : str
+        The name of the file you want to add or update, including the relative
+        path to the file in the repository.
+    file_content : bytes
+        The content of the file, in Base64-encoded binary object format.
+
+    Returns
+    -------
+    response : dict
+        {"blobId": "string", "commitId": "string", "treeId": "string"}.
+    """
+    client = boto3.client('codecommit')
+    response = client.put_file(repositoryName=repo_name,
+                               branchName=branch_name,
+                               fileContent=file_content,
+                               filePath=file_path,
+                               parentCommitId=parent_commit_id)
+
+    return response
+
+
+def init_commit(repo_name, branch_name):
+    client = boto3.client('codecommit')
+    with tempfile.TemporaryFile() as fd:
+        fd.seek(0)
+        encoded = base64.b64encode(fd.read())
+    header = {
+        'repositoryName': repo_name,
+        'branchName': branch_name,
+        'putFiles': [
+            {
+                'filePath': '.init',
+                'fileContent': encoded
+            }
+        ]
+    }
+    response = client.create_commit(**header)
+
+    return response
+
+
+def create_commit(repo_name, branch_name, source_folder=None):
+    client = boto3.client('codecommit')
+    header = {
+        'repositoryName': repo_name,
+        'branchName': branch_name
+    }
+
+    if source_folder is not None:
+        parent_folder = os.path.join(source_folder, repo_name)
+        putfile_list = []
+        for (root, folders, files) in os.walk(parent_folder):
+            for file in files:
+                file_path = os.path.join(root, file)
+                with open(file_path, mode='r+b') as file_obj:
+                    file_content = file_obj.read()
+                putfile_entry = {'filePath': str(file_path).replace(parent_folder, ''),
+                                 'fileContent': file_content}
+                putfile_list.append(putfile_entry)
+                header['putFiles'] = putfile_list
+
+    response = client.create_commit(**header)
+
+    return response
+
+
+def mount_repo(repo_name):
+    repo_dir = tempfile.mkdtemp()
+
+    return repo_dir
 
 
 @app.route('/sign_s3/')

@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.secret_key = "testkey1"
 
 DATABASE_URL = os.environ['DATABASE_URL']
-database = psycopg2.connect(DATABASE_URL, sslmode='require')
+database = psycopg2.connect(DATABASE_URL, sslmode='prefer')
 cur = database.cursor()
 database.autocommit = True
 

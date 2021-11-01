@@ -16,4 +16,4 @@ CMD gunicorn -b 0.0.0.0:$PORT scrumhub.login.login:app
 
 FROM base as test
 
-CMD python -m unittest ProjectTest.ProjectTest.test_create_repo
+CMD python -m unittest tests.database.ProjectTest

@@ -1,9 +1,11 @@
 # main.py
-
+from datetime import datetime
+from datetime import date
+from datetime import *
 from flask import *
 import psycopg2
 from werkzeug.utils import secure_filename
-import datetime
+# import datetime
 
 from scrumhub import task
 from scrumhub import login
@@ -123,7 +125,7 @@ def fileUploadPage():
 @app.route("/project/newTask", methods = ["GET", "POST"])
 def newTask():
     if request.method == "GET":
-        return render_template("newTask.html", name = getDisplayName())
+        return render_template("newtask.html", name = getDisplayName())
     elif request.method == "POST":
         task.createTask(request.form, database.cur)
         return redirect("/project", code=301)

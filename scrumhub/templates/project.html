@@ -1,18 +1,31 @@
 <html>
 	<head>
-	<title>{{title}}</title>
-	 <link rel="stylesheet" href="/static/main.css">
-
+	    <title>{{title}}</title>
+	    <link rel="stylesheet" href="/static/main.css">
 	</head>
 
 	<body>
+        <button class="modal-btn" style="float: right;font-size: large;padding: 20;">Add Collaborator</button>
+        
+        <div class="modal-bg">
+            <div class="modal">
+                <h2>Invite a collaborator</h2>
+                <form action="/addCollab" method="POST">
+                    <label for="email">Email: </label>
+                    <input type="email" name="email" required>
+                    
+                    <input type="submit" class="modal-btn" value="Add">
+                </form>
+                
+                <span class="modal-close">X</span>
+            </div>
+        </div>
 
 		<div class = "header">
-
 			<!-- Logo on top left corner. Plain text for now -->
             <div class="sidenav">
                 <a href="#" style="text-align: center;">Name</a>
-                		<a href="/profile" style="text-align: center;">{{name}}</a>
+                <a href="/profile" style="text-align: center;">{{name}}</a>
 				<a href="duedate" style="text-align: center;">Due Dates</a>
 				<a href="#" style="text-align: center;">Tasks</a>
 				<a href="#" style="text-align: center;">Meetings Tool</a>
@@ -20,56 +33,49 @@
             </div>
 
 			<div class="newlogo">
-			Scrum Hub
+			    Scrum Hub
 				<a href="/project/fileUpload" style="float:right;font-size: large;padding: 20"> Add a File </a>
 				<a href="/project/newTask" style="float:right;font-size: large;padding: 20"> Add a Task </a>
 				<a href="#" style="float:right;font-size: large;padding: 20"> Add a Collaborator </a>
-        		</div>
+            </div>
 		</div>
 
-	<div class = "main">
-		
+	    <div class = "main">
+            <div class="mainbackproject">
+                <!-- <div class="mainnew">
+                    <a href="crproject">Create New Project</a>
+                </div> -->
+                
+                <div class = "columns" style="background-color:#ccc;">
+                    <h2>Backlog</h2>
+                    {{btasks |safe}}
+                </div>
+                <div class = "columns" style="background-color:#ccc;">
+                    <h2>Planned</h2>
+                </div>
+                <div class = "columns" style="background-color:#ccc;">
+                    <h2>In Progress</h2>
+                </div>
+                <div class = "columns" style="background-color:#ccc;">
+                    <h2>Testing</h2>
+                </div>
+                <div class = "columns" style="background-color:#ccc;">
+                    <h2>Completed</h2>
+                </div>
+                <div class = "columns" style="background-color:#ccc;">
+                    <h2>Closed</h2>
+                </div>
 
-        <div class="mainbackproject">
-            <!-- <div class="mainnew">
-                <a href="crproject">Create New Project</a>
-            </div> -->
-
-	
-
-            <div class = "columns" style="background-color:#ccc;">
-                <h2>Backlog</h2>
-                {{btasks |safe}}
+	            <div class = "columns" style="background-color:#ccc;">
+                    <h2>Uploaded Files</h2>
+		            {{files | safe}}
+                </div>
             </div>
-            <div class = "columns" style="background-color:#ccc;">
-                <h2>Planned</h2>
-            </div>
-            <div class = "columns" style="background-color:#ccc;">
-                <h2>In Progress</h2>
-            </div>
-            <div class = "columns" style="background-color:#ccc;">
-                <h2>Testing</h2>
-            </div>
-            <div class = "columns" style="background-color:#ccc;">
-                <h2>Completed</h2>
-            </div>
-            <div class = "columns" style="background-color:#ccc;">
-                <h2>Closed</h2>
-            </div>
-	    <div class = "columns" style="background-color:#ccc;">
-                <h2>Uploaded Files</h2>
+    	</div>
+        
+        <script src="../static/project.js"></script>
+        <script type="text/javascript" src="../static/modal.js"></script>
 
-		{{files | safe}}
-            </div>
-
-
-        </div>
-
-	</div>
-
-
-
-<script src="../static/project.js"></script>
-</body>
+    </body>
 
 </html>

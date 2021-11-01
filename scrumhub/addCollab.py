@@ -18,13 +18,13 @@ def validPassword(password, confirm):
 
     return length and confirmation
 
-# input: request & cursor
-# output: none
-# results: collaborator email appended to contributor array
-#          an email is sent to the collaborator
-
 
 def handleAddCollab(request, cur):
+    """Add a collaborator
+    input:      request & cursor
+    results:    collaborator's email appended to contributor array
+                email is sent to collaborator
+    """
     port = 465  # for ssl
     password = "changethispassword"
 
@@ -49,7 +49,7 @@ def handleAddCollab(request, cur):
                 # for now use this, obvious fault is that it will affect ALL repos w the same owner
                 cur.execute("UPDATE testProjects SET collaborators = array_append(collaborators, %s) WHERE projectid = %s AND owner = %s ",
                             (collab_email, str(session['projectid']), email,))
-                
+
                 # use this code when a project can be created
                 # cur.execute("UPDATE project SET contributors = array_append(array_field, %s) WHERE owner = %s AND name = %s",
                 #             (collab_email, email, project_name))

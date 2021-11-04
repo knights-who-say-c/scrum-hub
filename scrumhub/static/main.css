@@ -241,3 +241,11 @@ form > input[type="submit"] {
   font-weight: bold;
   cursor: pointer;
 }
+
+.notdue{
+  border: 3px solid  #ccc;
+  border-style: dashed;
+  margin-left: auto;
+  height: fit-content;
+  margin-right: auto;
+}

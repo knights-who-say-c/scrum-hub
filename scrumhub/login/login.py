@@ -8,12 +8,14 @@ from scrumhub import addCollab
 from scrumhub.profile import Profile
 
 from scrumhub.login import task
+from tests.database.PostgresTest import DATABASE_URL
 
 
 app = Flask(__name__)
 app.secret_key = "testkey1"
 
-DATABASE_URL = os.environ['DATABASE_URL']
+# DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_URL = "postgres://wrwgrvzkfihtdb:bec460c350a6b77c2cd4bddd0484cdeef19b0a3a1a4660ae28e4b333936edcd0@ec2-34-233-187-36.compute-1.amazonaws.com:5432/dbdb4ogu09rgqg"
 database = psycopg2.connect(DATABASE_URL, sslmode='prefer')
 cur = database.cursor()
 database.autocommit = True

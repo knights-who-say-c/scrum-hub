@@ -58,16 +58,16 @@ a {
   height: 100%;
 }
 
-.login-form {
-  display: inline-block;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  background-color: Whitesmoke;
-  width: 50%;
+.userForm {
+	display: inline-block;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	background-color: Whitesmoke;
+	width:50%;
 }
 
-.login-form > form {
-  margin-left: 20%;
+.userForm > form {
+	margin-left: 20%;
 }
 
 form > input[type="submit"] {

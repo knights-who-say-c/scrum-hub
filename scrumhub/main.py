@@ -105,8 +105,6 @@ def duedate():
     dued.sort(key=lambda date: datetime.strptime(date,'%Y-%m-%d'))
     today = date.today()
     today = today.strftime("%Y-%m-%d")
-    # for x in dued:
-    #     htmlInjectTasks += ("<div>" +  x + "</div>")
     for i in dued:
         for x in tasks:
             if i == str(x[5]):
@@ -148,9 +146,13 @@ def fileUploadPage():
 
         database.uploadFile(filename, upload, extension, name)
         return redirect("/project", code=301)
-    
-@app.route("/project/newTask", methods = ["GET", "POST"])
+
+@app.route("/project/newTask")
 def newTask():
+	return redirect("/project/newIssue", code=301)
+
+@app.route("/project/newIssue", methods = ["GET", "POST"])
+def newIssue():
     if request.method == "GET":
         return render_template("newtask.html", name = getDisplayName())
     elif request.method == "POST":

@@ -76,13 +76,11 @@ def duedate():
     dued.sort(key=lambda date: datetime.strptime(date,'%Y-%m-%d'))
     today = date.today()
     today = today.strftime("%Y-%m-%d")
-    # for x in dued:
-    #     htmlInjectTasks += ("<div>" +  x + "</div>")
     for i in dued:
         for x in tasks:
             if i == str(x[4]):
                 if i <= today:
-                    htmlInjectTasks += ("<div class=" + "due" + ">" +  x[0] + "<br/>" +  x[1] + "<br/>" +  x[2] + "<br/>" +  x[3] + "<br/>" +  str(x[4]) + "<br/>"  + "OverDued" + "</div>")
+                    htmlInjectTasks += ("<div class=due>" +  x[0] + "<br/>" +  x[1] + "<br/>" +  x[2] + "<br/>" +  x[3] + "<br/>" +  str(x[4]) + "<br/>"  + "OverDued</div>")
                 else:
                     htmlInjectTasks += ("<div>" +  x[0] + "<br/>" +  x[1] + "<br/>" +  x[2] + "<br/>" +  x[3] + "<br/>" +  str(x[4]) + "<br/>"  +  "</div>")
     return render_template("duedate.html", title = "Due Dates Page", due = htmlInjectTasks)  
@@ -119,9 +117,13 @@ def fileUploadPage():
 
         database.uploadFile(filename, upload, extension, name)
         return redirect("/project", code=301)
-    
-@app.route("/project/newTask", methods = ["GET", "POST"])
+
+@app.route("/project/newTask")
 def newTask():
+	return redirect("/project/newIssue", code=301)
+
+@app.route("/project/newIssue", methods = ["GET", "POST"])
+def newIssue():
     if request.method == "GET":
         return render_template("newTask.html", name = getDisplayName())
     elif request.method == "POST":

@@ -59,7 +59,7 @@ a {
 	height: 100%;
 }
 
-.login-form {
+.userForm {
 	display: inline-block;
 	padding-top: 20px;
 	padding-bottom: 20px;
@@ -67,7 +67,7 @@ a {
 	width:50%;
 }
 
-.login-form > form {
+.userForm > form {
 	margin-left: 20%;
 }
 

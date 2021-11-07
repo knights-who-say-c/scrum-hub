@@ -10,6 +10,7 @@ from werkzeug.utils import secure_filename
 from scrumhub import task
 from scrumhub import login
 from scrumhub import database
+from scrumhub import collab
 
 app = Flask(__name__)
 app.secret_key = "testkey1"
@@ -124,8 +125,15 @@ def projectPage():
     injectedFiles = ""
     for x in uploadedFiles:
         injectedFiles += ("<p>" + x[3] + "." + x[2] + "</p>")
-    injectedTasks = task.HTMLInjection() 
-    return render_template("project.html", title = "Project Page", btasks = injectedTasks, files = injectedFiles, name = getDisplayName())
+    injectedTasks = task.HTMLInjection()
+
+    # rendering the list of collaborators depends on session['project_id']
+    htmlInjectCollabs = ""
+    collabs = collab.get_collabs(session['project_id'])
+    for x in collabs:
+        htmlInjectCollabs += ("<p>" + x + "</p> <br/>")
+    return render_template("project.html", title = "Project Page", btasks = injectedTasks, files = injectedFiles, name = getDisplayName(), collaborators = htmlInjectCollabs)
+
 
 
 @app.route('/project/fileUpload', methods = ["GET", "POST"])
@@ -169,7 +177,7 @@ def profilePage():
         return redirect("/profile", code=301)
     
   
-# app.run(host='0.0.0.0', port=8000)
-# not necessary to run in container according to docker documentation
-
-
+@app.route('/addCollab', methods=['POST', 'GET'])
+def handleAddCollab():
+    collab.handleAddCollab(request, database.cur)
+    return redirect("/project", code=301)

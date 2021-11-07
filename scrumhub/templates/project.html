@@ -5,9 +5,9 @@
 	</head>
 
 	<body>
-        <button class="modal-btn" style="float: right;font-size: large;padding: 20;">Add Collaborator</button>
         
-        <div class="modal-bg">
+        <button class="modal-btn" href="#modal1" style="float: right;font-size: large;padding: 20;">Add Collaborator</button>        
+        <div id="modal1" class="modal-bg">
             <div class="modal">
                 <h2>Invite a collaborator</h2>
                 <form action="/addCollab" method="POST">
@@ -21,6 +21,15 @@
             </div>
         </div>
 
+        <button class="modal-btn" href="#modal2" style="float: right;font-size: large;padding: 20;">View Collaborators</button>
+        <div id="modal2" class="modal-bg">
+            <div class="modal">
+                <h2>Collaborators:</h2>
+                {{collaborators | safe}} 
+                <span class="modal-close">X</span>
+            </div>
+        </div>
+
 		<div class = "header">
 			<!-- Logo on top left corner. Plain text for now -->
             <div class="sidenav">
@@ -29,7 +38,7 @@
 				<a href="duedate" style="text-align: center;">Due Dates</a>
 				<a href="mytasks" style="text-align: center;">My Tasks</a>
 				<a href="#" style="text-align: center;">Meetings Tool</a>
-				<! -- <a href="#" style="padding-top:300%;text-align: center;">Settings</a> -->
+				<!-- <a href="#" style="padding-top:300%;text-align: center;">Settings</a> -->
             </div>
 
 			<div class="newlogo">
@@ -71,7 +80,7 @@
 		            {{files | safe}}
                 </div>
             </div>
-    	</div>
+    	</div>        
         
         <script src="../static/project.js"></script>
         <script type="text/javascript" src="../static/modal.js"></script>

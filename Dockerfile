@@ -1,4 +1,4 @@
-FROM python:3.8-slim-buster
+FROM python:3.8-slim-buster as base
 
 WORKDIR /app
 
@@ -10,9 +10,8 @@ RUN pip install python-dotenv
 
 COPY . .
 
-CMD gunicorn -b 0.0.0.0:5000 scrumhub.main:app
+CMD gunicorn -b 0.0.0.0:$PORT scrumhub.main:app
 
+FROM base as test
 
-# FROM base as test
-
-# CMD python -m unittest tests.database.ProjectTest
+CMD python -m unittest tests.database.ProjectTest

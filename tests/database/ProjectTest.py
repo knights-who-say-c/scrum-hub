@@ -3,7 +3,7 @@ import tempfile
 import unittest
 import os
 import psycopg2
-from scrumhub.database import Project
+from scrumhub.db import project
 
 
 class ProjectTest(unittest.TestCase):
@@ -27,28 +27,28 @@ class ProjectTest(unittest.TestCase):
 
     def test_create_repo(self):
         try:
-            response = Project.create_repo('testrepo')
+            response = project.create_repo('testrepo')
         except:
-            response = Project.get_repo('testrepo')
+            response = project.get_repo('testrepo')
         data = response.get('repositoryMetadata')
         self.branch_name = data.get('defaultBranchName', 'master')
         self.repo_name = data.get('repositoryName')
         self.assertEqual(response.get('ResponseMetadata', {}).get('HTTPStatusCode', -1), 200)
 
     def test_upload_repo(self):
-        response = Project.init_commit(self.repo_name, self.branch_name)
+        response = project.init_commit(self.repo_name, self.branch_name)
         self.commit_id = response['commitId']
         with tempfile.TemporaryFile() as fd:
             fd.write(b'Hello world!')
             fd.seek(0)
             encoded = base64.b64encode(fd.read())
 
-        response = Project.put_file(self.repo_name, self.branch_name, self.commit_id, f'{self.repo_name}/test.txt',
+        response = project.put_file(self.repo_name, self.branch_name, self.commit_id, f'{self.repo_name}/test.txt',
                                     encoded)
         self.assertEqual(response.get('ResponseMetadata', {}).get('HTTPStatusCode', -1), 200)
 
     def test_delete_repo(self):
-        response = Project.delete_repo('testrepo')
+        response = project.delete_repo('testrepo')
         self.assertEqual(response.get('ResponseMetadata', {}).get('HTTPStatusCode', -1), 200)
 
 

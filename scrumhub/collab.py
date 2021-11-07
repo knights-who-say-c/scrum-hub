@@ -41,7 +41,7 @@ def handleAddCollab(request, cur):
         collab_email = formData['email']
         if validEmail(collab_email):
             cur.execute("UPDATE public.project SET contributors = array_append(contributors, %s) WHERE id = %s AND owner = %s ",
-                        (collab_email, str(session['projectid']), email,))
+                        (collab_email, str(session['project_id']), email,))
 
             with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
                 sender_email = "scrumhubwebapp@gmail.com"
@@ -54,12 +54,14 @@ def handleAddCollab(request, cur):
                 """.format(email, collab_email, email)
 
                 server.sendmail(sender_email, collab_email, msg)
+
+
 def get_collabs(project_id):
     sql_string = f"SELECT collaborators FROM public.project WHERE id = '{project_id}'"
-    conn = pg.connect(DATABASE_URL, sslmode='require')
+    conn = pg.connect(DATABASE_URL, DATABASE_PASSWORD, sslmode='require')
     conn.autocommit = True
     results = []
-    
+
     try:
         with conn:
             with conn.cursor() as cur:

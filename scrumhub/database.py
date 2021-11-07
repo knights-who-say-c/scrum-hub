@@ -4,13 +4,15 @@ import os
 import psycopg2
 
 DATABASE_URL = os.environ['DATABASE_URL']
+
+
 db = psycopg2.connect(DATABASE_URL, sslmode='require')
 cur = db.cursor()
 db.autocommit = True
 
 cur.execute("CREATE TABLE IF NOT EXISTS Logins (firstName text, lastName text, email text, password text)")
 cur.execute("CREATE TABLE IF NOT EXISTS Uploads (fileName text, file bytea, extension text, simpleName text)")
-cur.execute("CREATE TABLE IF NOT EXISTS Tasks (title text, description text, label text, assignee text, dueDate date)")
+cur.execute("CREATE TABLE IF NOT EXISTS Tasks (type text, title text, description text, label text, assignee text, dueDate date)")
 
 def createAccount(first, last, email, password):
     cur.execute("INSERT INTO Logins (firstName, lastName, email, password) VALUES(%s, %s, %s, %s)", (first, last, email, password))
@@ -49,7 +51,7 @@ def updateLastName(newVal, email):
 def updateEmail(newVal, email):
     cur.execute("UPDATE Logins SET email = %s WHERE email = %s", (newVal, email))
 
-def createTask(title, description, label, assignee, dueDate):
-    cur.execute("INSERT INTO Tasks (title, description, label, assignee, dueDate) VALUES(%s, %s, %s, %s, %s)", (title, description, label, assignee, dueDate))
+def createTask(type, title, description, label, assignee, dueDate):
+    cur.execute("INSERT INTO Tasks (type, title, description, label, assignee, dueDate) VALUES(%s, %s, %s, %s, %s, %s)", (type, title, description, label, assignee, dueDate))
     
     

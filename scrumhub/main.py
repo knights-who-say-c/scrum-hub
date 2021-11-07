@@ -1,9 +1,11 @@
 # main.py
-
+from datetime import datetime
+from datetime import date
+from datetime import *
 from flask import *
 import psycopg2
 from werkzeug.utils import secure_filename
-import datetime
+# import datetime
 
 from scrumhub import task
 from scrumhub import login
@@ -63,14 +65,14 @@ def registrationPage():
         msg = login.register(request.form) 
         return render_template("login.html", title = "Sign Up", feedback = msg)  
 
-@app.route('/duedate')
-def duedate():
+@app.route('/mytasks')
+def mytasks():
     
     tasks = database.getTasks()
     dued = []
     for i in tasks:
         if str(i[4]) not in dued:
-            dued.append(str(i[4]))
+            dued.append(str(i[5]))
 
     htmlInjectTasks = ""
     print(tasks)
@@ -81,12 +83,37 @@ def duedate():
     #     htmlInjectTasks += ("<div>" +  x + "</div>")
     for i in dued:
         for x in tasks:
-            if i == str(x[4]):
+            if i == str(x[5]):
+                name = getDisplayName()
+                if name == str(x[4]):
+                    if i <= today:
+                        htmlInjectTasks += ("<div class=" + "due" + ">" +  str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" + str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  + "OverDued" + "</div>")
+                    else:
+                        htmlInjectTasks += ("<div class=" + "notdue" + ">" + str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" +  str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  +  "</div>")
+    return render_template("mytasks.html", title = "my Tasks Page", due = htmlInjectTasks, name = getDisplayName())  
+
+@app.route('/duedate')
+def duedate():
+    
+    tasks = database.getTasks()
+    dued = []
+    for i in tasks:
+        if str(i[4]) not in dued:
+            dued.append(str(i[5]))
+
+    htmlInjectTasks = ""
+    print(tasks)
+    dued.sort(key=lambda date: datetime.strptime(date,'%Y-%m-%d'))
+    today = date.today()
+    today = today.strftime("%Y-%m-%d")
+    for i in dued:
+        for x in tasks:
+            if i == str(x[5]):
                 if i <= today:
-                    htmlInjectTasks += ("<div class=" + "due" + ">" +  x[0] + "<br/>" +  x[1] + "<br/>" +  x[2] + "<br/>" +  x[3] + "<br/>" +  str(x[4]) + "<br/>"  + "OverDued" + "</div>")
+                    htmlInjectTasks += ("<div class=" + "due" + ">" +  str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" + str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  + "OverDued" + "</div>")
                 else:
-                    htmlInjectTasks += ("<div>" +  x[0] + "<br/>" +  x[1] + "<br/>" +  x[2] + "<br/>" +  x[3] + "<br/>" +  str(x[4]) + "<br/>"  +  "</div>")
-    return render_template("duedate.html", title = "Due Dates Page", due = htmlInjectTasks)  
+                    htmlInjectTasks += ("<div class=" + "notdue" + ">" +  str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" +  str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  +  "</div>")
+    return render_template("duedate.html", title = "Due Dates Page", due = htmlInjectTasks, name = getDisplayName())  
 
 @app.route('/crproject')
 def createProjectPage():
@@ -127,11 +154,15 @@ def fileUploadPage():
 
         database.uploadFile(filename, upload, extension, name)
         return redirect("/project", code=301)
-    
-@app.route("/project/newTask", methods = ["GET", "POST"])
+
+@app.route("/project/newTask")
 def newTask():
+	return redirect("/project/newIssue", code=301)
+
+@app.route("/project/newIssue", methods = ["GET", "POST"])
+def newIssue():
     if request.method == "GET":
-        return render_template("newTask.html", name = getDisplayName())
+        return render_template("newtask.html", name = getDisplayName())
     elif request.method == "POST":
         task.createTask(request.form, database.cur)
         return redirect("/project", code=301)

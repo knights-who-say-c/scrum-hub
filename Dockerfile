@@ -15,4 +15,4 @@ CMD gunicorn -b 0.0.0.0:5000 scrumhub.main:app
 
 # FROM base as test
 
-# CMD python -m unittest app/tests/database/*
+# CMD python -m unittest tests.database.ProjectTest

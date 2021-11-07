@@ -3,12 +3,11 @@ from datetime import date
 from flask import *
 import os
 import psycopg2
+import uuid
 from werkzeug.utils import secure_filename
 from scrumhub import addCollab
+from scrumhub import task
 from scrumhub.profile import Profile
-
-from scrumhub.login import task
-
 
 app = Flask(__name__)
 app.secret_key = "testkey1"
@@ -21,6 +20,7 @@ database.autocommit = True
 cur.execute("CREATE TABLE IF NOT EXISTS testLogins (firstName text, lastName text, email text, password text)")
 cur.execute("CREATE TABLE IF NOT EXISTS testUploads (fileName text, file bytea, extension text, simpleName text)")
 cur.execute("CREATE TABLE IF NOT EXISTS testTasks (title text, description text, label text, assignee text, dueDate date)")
+cur.execute("CREATE TABLE IF NOT EXISTS testProjects (projectid uuid, owner text, collaborators text[])")
 
 
 def validEmail(email):
@@ -179,12 +179,6 @@ def crproject():
 
 @app.route('/project')
 def project():
-    # # Temporary project creation
-    # session['email'] = "sprint3@buffalo.edu"
-    # session['projectid'] = uuid.uuid1()
-    # cur.execute("INSERT INTO testProjects (projectid, owner) VALUES(%s, %s)", (str(
-    #     session['projectid']), session['email'],))
-
     cur.execute("SELECT * FROM testUploads")
     uploadedFiles = cur.fetchall()
     htmlInject = ""
@@ -203,6 +197,11 @@ def project():
     cur.execute("SELECT * FROM testTasks")
     tasks = cur.fetchall()
  
+    htmlInjectCollabs = ""
+    collabs = addCollab.get_collabs(session['projectid'])
+    for x in collabs:
+        htmlInjectCollabs += ("<p>" + x + "</p> <br/>")
+    return render_template("project.html", title = "Project Page", btasks = htmlInjectTasks, files = htmlInject, collaborators = htmlInjectCollabs)
     return render_template("project.html", title = "Project Page", btasks = htmlInjectTasks, files = htmlInject)
 
 

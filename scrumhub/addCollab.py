@@ -4,6 +4,10 @@ import psycopg2
 from werkzeug.utils import secure_filename
 import smtplib
 import ssl
+import psycopg2 as pg
+
+DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_PASSWORD = os.environ['DATABASE_PASSWORD']
 
 
 def validEmail(email):
@@ -33,28 +37,36 @@ def handleAddCollab(request, cur):
 
     if request.method == 'POST':
         email = session['email']
-
-        # create project functionality was never finished
-        # no project to test it on
-        # project_name = session['project_name']
-
         formData = request.form
         collab_email = formData['email']
         if validEmail(collab_email):
-            cur.execute(
-                "SELECT email FROM testLogins WHERE email = %s", (collab_email,))
-            existing = cur.fetchone()
-            if existing:
+            cur.execute("UPDATE public.project SET contributors = array_append(contributors, %s) WHERE id = %s AND owner = %s ",
+                        (collab_email, str(session['projectid']), email,))
 
-                # for now use this, obvious fault is that it will affect ALL repos w the same owner
-                cur.execute("UPDATE testProjects SET collaborators = array_append(collaborators, %s) WHERE projectid = %s AND owner = %s ",
-                            (collab_email, str(session['projectid']), email,))
-
-                # use this code when a project can be created
-                # cur.execute("UPDATE project SET contributors = array_append(array_field, %s) WHERE owner = %s AND name = %s",
-                #             (collab_email, email, project_name))
             with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
                 sender_email = "scrumhubwebapp@gmail.com"
                 server.login(sender_email, password)
-                server.sendmail(sender_email, collab_email,
-                                """\nSubject: [ScrumHub] Project invitation\n\n{}: has invited you to their repository on ScrumHub!""".format(email))
+
+                msg = """From: {}
+                To: {}\n
+                Subject: [ScrumHub] Project Invitation\n
+                {} has invited you to their project on ScrumHub!.\n
+                """.format(email, collab_email, email)
+
+                server.sendmail(sender_email, collab_email, msg)
+def get_collabs(project_id):
+    sql_string = f"SELECT collaborators FROM public.project WHERE id = '{project_id}'"
+    conn = pg.connect(DATABASE_URL, sslmode='require')
+    conn.autocommit = True
+    results = []
+    
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(sql_string)
+                results = cur.fetchall()
+
+    finally:
+        conn.close()
+
+    return results

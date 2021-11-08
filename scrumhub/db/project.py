@@ -303,11 +303,17 @@ def _put_file(repo_name, branch_name, file_content, file_path, parent_commit_id)
         {'commitId': 'string', 'blobId': 'string', 'treeId': 'string'}.
     """
     client = boto3.client('codecommit')
-    response = client.put_file(repositoryName=repo_name,
-                               branchName=branch_name,
-                               fileContent=file_content,
-                               filePath=file_path,
-                               parentCommitId=parent_commit_id)
+    kwargs = {
+        'repositoryName': repo_name,
+        'branchName': branch_name,
+        'fileContent': file_content,
+        'filePath': file_path
+    }
+
+    if parent_commit_id:
+        kwargs['parent_commit_id'] = parent_commit_id
+
+    response = client.put_file(**kwargs)
 
     return response
 

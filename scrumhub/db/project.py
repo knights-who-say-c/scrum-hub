@@ -282,3 +282,8 @@ def sign_s3():
         'url': 'https://%s.s3.amazonaws.com/%s' % (s3_bucket, file_name)
     })
 
+
+if __name__ == '__main__':
+    uuid = create_project('testproj', 'jonathan', ['jonathan1', 'mike', 'eric'])
+    proj = get_project(uuid)
+    print(proj.uuid, proj.project_name, proj.owner, proj.contributors)

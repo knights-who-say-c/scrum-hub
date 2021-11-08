@@ -1,0 +1,70 @@
+<html>
+	<head>
+	<title>New Task</title>
+	 <link rel="stylesheet" href="/static/main.css">
+
+	</head>
+
+	<body>
+
+		<div class = "header">
+
+			
+            <div class="sidenav">
+                	<a href="/profile" style="text-align: center;">{{name}}</a>
+			<a href="#" style="text-align: center;">Due Dates</a>
+			<a href="#" style="text-align: center;">My Tasks</a>
+			<a href="#" style="text-align: center;">Meetings Tool</a>
+			<a href="#" style="padding-top:300%;text-align: center;">Settings</a>
+            </div>
+			<!-- Logo on top left corner. Plain text for now -->
+			<div class="newlogo">
+			Scrum Hub
+			</div>
+
+            
+
+		</div>
+    
+	<div class = "main">
+        <div class="mainback">
+        <div class="userForm">		
+        <form action = "/project/newIssue" method = "POST" enctype="multipart/form-data">
+
+ 	
+	<input type="radio" id="story" name="issueType" value="User Story" required>
+	<label for="task">User Story</label><br>
+
+ 	
+  	<input type="radio" id="task" name="issueType" value="Task" required>
+	<label for="task">Task</label><br>
+				
+            <label for="title">Title</label><br/>
+            <input type="text" id="title" name="title" required><br/>
+
+            <label for="description">Description</label><br/>
+            <input type="text" id="description" name="description" required><br/>
+
+            <label for="label">Label</label><br/>
+            <input type="text"id="label" name="label" required><br/>
+
+            <label for="assignee">Assignee</label><br/>
+            <input type="text" id="assignee" name="assignee" required><br/>
+
+            <label for="due">Due Date</label><br/>
+            <input type="date" id="due" name="due" required><br/>
+
+            <input type="submit" value="Submit">
+
+        </form>	
+            </div>
+        </div>
+
+	</div>
+
+
+
+<script src="../static/project.js"></script>
+</body>
+
+</html>

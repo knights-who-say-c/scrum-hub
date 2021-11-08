@@ -6,14 +6,12 @@ COPY requirements.txt requirements.txt
 
 RUN pip install -r requirements.txt
 
+RUN pip install python-dotenv
+
 COPY . .
 
-ENV FLASK_APP=/app/scrumhub/login/login.py
+CMD gunicorn -b 0.0.0.0:$PORT scrumhub.main:app
 
-CMD gunicorn -b 0.0.0.0:$PORT scrumhub.login.login:app
-# CMD gunicorn scrumhub.login.login:app
-# CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0"]
+# FROM base as test
 
-FROM base as test
-
-CMD python -m unittest app/tests/database/*
+# CMD python -m unittest tests.database.ProjectTest

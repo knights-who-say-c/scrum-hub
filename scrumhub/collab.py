@@ -57,7 +57,7 @@ def handleAddCollab(request, cur):
 
 
 def get_collabs(project_id):
-    sql_string = f"SELECT collaborators FROM public.project WHERE id = '{project_id}'"
+    sql_string = f"SELECT contributors FROM public.project WHERE id = '{project_id}'"
     conn = pg.connect(DATABASE_URL, DATABASE_PASSWORD, sslmode='require')
     conn.autocommit = True
     results = []

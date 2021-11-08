@@ -6,7 +6,7 @@ from flask import *
 import psycopg2
 from werkzeug.utils import secure_filename
 # import datetime
-from db import project
+from scrumhub.db import project
 
 from scrumhub import task
 from scrumhub import login

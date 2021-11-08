@@ -14,4 +14,4 @@ CMD gunicorn -b 0.0.0.0:$PORT scrumhub.main:app
 
 FROM base as test
 
-CMD python -m unittest tests.database.ProjectTest
+# CMD python -m unittest tests.database.ProjectTest

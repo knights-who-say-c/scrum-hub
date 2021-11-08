@@ -6,6 +6,7 @@ from flask import *
 import psycopg2
 from werkzeug.utils import secure_filename
 # import datetime
+from db import project
 
 from scrumhub import task
 from scrumhub import login
@@ -130,10 +131,15 @@ def projectPage():
     # rendering the list of collaborators depends on session['project_id']
     htmlInjectCollabs = ""
     collabs = collab.get_collabs(session['project_id'])
-    for x in collabs:
+    for x in collabs[0][0]:
         htmlInjectCollabs += ("<p>" + x + "</p> <br/>")
     return render_template("project.html", title = "Project Page", btasks = injectedTasks, files = injectedFiles, name = getDisplayName(), collaborators = htmlInjectCollabs)
 
+@app.route('/projectCreate')
+def projectCreate():
+    session['project_id'] = project.create_project("", session['email'], [])
+    print(session['project_id'])
+    return redirect("project", code=301)
 
 
 @app.route('/project/fileUpload', methods = ["GET", "POST"])

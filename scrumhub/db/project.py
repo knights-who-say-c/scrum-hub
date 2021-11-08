@@ -67,7 +67,7 @@ def create_project(project_name, owner_name, contrib_names):
     sql_string = (f"INSERT INTO public.project "
                   f"(id, name, owner, contributors) "
                   f"VALUES "
-                  f"(gen_random_uuid(), '{project_name}', '{owner_name}', ARRAY {contrib_names})"
+                  f"(gen_random_uuid(), '{project_name}', '{owner_name}', ARRAY {contrib_names}::text[])"
                   f"RETURNING id;")
     # Connect to the database
     conn = pg.connect(DATABASE_URL, password=DATABASE_PASSWORD, sslmode='prefer')

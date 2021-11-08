@@ -37,7 +37,7 @@ def getEmail():
 
 @app.route('/')
 def indexPage():
-    return redirect("home", code=301)
+    return redirect("login", code=301)
 
 @app.route('/home')
 def homePage():

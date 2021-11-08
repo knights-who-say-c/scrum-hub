@@ -5,6 +5,7 @@ import boto3
 import json
 import os
 
+import botocore.exceptions
 import psycopg2 as pg
 from flask import Flask, request
 
@@ -16,14 +17,13 @@ app = Flask(__name__)
 
 
 class Project:
+    """Container object for representing scrumhub projects."""
 
-    def __init__(self, uuid, project_name, owner_name, contrib_names=None,
-                 aws_id=''):
+    def __init__(self, uuid, project_name, owner_name, contrib_names=None):
         self._uuid = uuid
         self._name = project_name
         self._owner = owner_name
         self._contributors = contrib_names if contrib_names is not None else []
-        self._aws_id = aws_id
 
     @property
     def uuid(self) -> str:
@@ -32,6 +32,7 @@ class Project:
 
     @property
     def project_name(self) -> str:
+        """Project name."""
         return self._name
 
     @property
@@ -44,8 +45,143 @@ class Project:
         """List of project contributors."""
         return self._contributors
 
+    @property
+    def latest_commit_id(self):
+        """Most recent commit id."""
+        client = boto3.client('codecommit')
+
+        try:
+            response = client.get_branch(repositoryName=self.uuid,
+                                         branchName='main')
+            commit_id = response['branch']['commitId']
+
+        except botocore.exceptions.ClientError as error:
+
+            if error.response['Error']['Code'] == 'BranchDoesNotExistException':
+                commit_id = None
+
+            else:
+                raise error
+
+        return commit_id
+
+    def put_file(self, file_content, file_path):
+        """Upload and commit a single file to the project repository.
+
+        Parameters
+        ----------
+        file_content : bytes
+            The content of the file, in Base64-encoded binary object format.
+        file_path : str
+            The name of the file you want to add or update, including the
+            relative path to the file in the repository.
+        """
+        response = _put_file(repo_name=self.uuid,
+                             branch_name='main',
+                             file_content=file_content,
+                             file_path=file_path,
+                             parent_commit_id=self.latest_commit_id)
+
+        return response
+
 
 def create_project(project_name, owner_name, contrib_names):
+    """Create a new project on the database and setup the AWS repository.
+
+    Parameters
+    ----------
+    project_name : str
+        Name of the project.
+    owner_name : str
+        Owner name or id.
+    contrib_names : list of strings
+        Contributor names or ids.
+
+    Returns
+    -------
+    uuid : str
+        Returns a uuid string if project creation was successful, otherwise
+        return an empty string.
+    """
+    uuid = _create_project_db(project_name, owner_name, contrib_names)
+    response = _create_project_repo(repo_name=uuid, repo_desc=project_name)
+
+    return uuid
+
+
+def get_project(uuid):
+    """Query existing project on the database by its uuid.
+
+    Parameters
+    ----------
+    uuid : str
+        UUID of the project.
+
+    Returns
+    -------
+    proj : Project
+        A project object containing metadata and functions. If no matching
+        projects were found, then None is returned.
+    """
+    sql_string = f"SELECT * FROM public.project WHERE id = '{uuid}'"
+    conn = pg.connect(DATABASE_URL, password=DATABASE_PASSWORD, sslmode='prefer')
+    conn.autocommit = True
+
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(sql_string)
+                results = cur.fetchone()
+
+    finally:
+        conn.close()
+
+    return Project(*results) if results else None
+
+
+def search_project(project_name):
+    """Query existing projects on the database by project name.
+
+        Parameters
+        ----------
+        project_name : str
+            Name of the project.
+
+        Returns
+        -------
+        query : list
+            List containing entries from the project database table that
+            matched the project_name argument.
+        """
+    sql_string = f"SELECT * FROM public.project WHERE name = '{project_name}'"
+    conn = pg.connect(DATABASE_URL, password=DATABASE_PASSWORD, sslmode='prefer')
+    conn.autocommit = True
+
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(sql_string)
+                results = cur.fetchone()
+
+    finally:
+        conn.close()
+
+    return Project(*results) if results else None
+
+
+def delete_project(uuid):
+    """Delete an existing project by its uuid.
+
+    Parameters
+    ----------
+    uuid : str
+        UUID of the project.
+    """
+    _delete_project_db(uuid)
+    _delete_project_repo(uuid)
+
+
+def _create_project_db(project_name, owner_name, contrib_names):
     """Create a new project on the database.
 
     Parameters
@@ -93,37 +229,7 @@ def create_project(project_name, owner_name, contrib_names):
     return uuid
 
 
-def get_project(uuid):
-    """Query existing project on the database by its uuid.
-
-    Parameters
-    ----------
-    uuid : str
-        UUID of the project.
-
-    Returns
-    -------
-    proj : Project
-        A project object containing metadata and functions. If no matching
-        projects were found, then None is returned.
-    """
-    sql_string = f"SELECT * FROM public.project WHERE id = '{uuid}'"
-    conn = pg.connect(DATABASE_URL, password=DATABASE_PASSWORD, sslmode='prefer')
-    conn.autocommit = True
-
-    try:
-        with conn:
-            with conn.cursor() as cur:
-                cur.execute(sql_string)
-                results = cur.fetchone()
-
-    finally:
-        conn.close()
-
-    return Project(*results) if results else None
-
-
-def delete_project(uuid):
+def _delete_project_db(uuid):
     """Delete an existing project on the database by its uuid.
 
     Parameters
@@ -144,32 +250,33 @@ def delete_project(uuid):
         conn.close()
 
 
-def create_repo(repo_name, repo_desc=''):
+def _create_project_repo(repo_name, repo_desc=''):
     tags = {}
     client = boto3.client('codecommit')
     response = client.create_repository(repositoryName=repo_name,
                                         repositoryDescription=repo_desc,
                                         tags=tags)
-    response['repositoryMetadata']['defaultBranchName'] = 'master'
+    response['repositoryMetadata']['defaultBranchName'] = 'main'
 
     return response
 
 
-def get_repo(repo_name):
+def _get_project_repo(repo_name):
     client = boto3.client('codecommit')
     response = client.get_repository(repositoryName=repo_name)
 
     return response
 
 
-def delete_repo(repo_name):
+def _delete_project_repo(repo_name):
+    """Deletes the specified repo from AWS."""
     client = boto3.client('codecommit')
     response = client.delete_repository(repositoryName=repo_name)
 
     return response
 
 
-def put_file(repo_name, branch_name, parent_commit_id, file_path, file_content):
+def _put_file(repo_name, branch_name, file_content, file_path, parent_commit_id):
     """Adds or updates a file in a branch in an AWS CodeCommit repository, and
     generates a commit for the addition in the specified branch.
 
@@ -180,27 +287,33 @@ def put_file(repo_name, branch_name, parent_commit_id, file_path, file_content):
     branch_name : str
         The name of the branch where you want to add or update the file. If
         this is an empty repository, this branch is created.
+    file_content : bytes
+        The content of the file, in Base64-encoded binary object format.
+    file_path : str
+        The name of the file you want to add or update, including the relative
+        path to the file in the repository.
     parent_commit_id : str
         The full commit ID of the head commit in the branch where you want to
         add or update the file. If this is an empty repository, no commit ID is
         required. If this is not an empty repository, a commit ID is required.
-    file_path : str
-        The name of the file you want to add or update, including the relative
-        path to the file in the repository.
-    file_content : bytes
-        The content of the file, in Base64-encoded binary object format.
 
     Returns
     -------
     response : dict
-        {"blobId": "string", "commitId": "string", "treeId": "string"}.
+        {'commitId': 'string', 'blobId': 'string', 'treeId': 'string'}.
     """
     client = boto3.client('codecommit')
-    response = client.put_file(repositoryName=repo_name,
-                               branchName=branch_name,
-                               fileContent=file_content,
-                               filePath=file_path,
-                               parentCommitId=parent_commit_id)
+    kwargs = {
+        'repositoryName': repo_name,
+        'branchName': branch_name,
+        'fileContent': file_content,
+        'filePath': file_path
+    }
+
+    if parent_commit_id:
+        kwargs['parent_commit_id'] = parent_commit_id
+
+    response = client.put_file(**kwargs)
 
     return response
 
@@ -281,9 +394,3 @@ def sign_s3():
         'data': presigned_post,
         'url': 'https://%s.s3.amazonaws.com/%s' % (s3_bucket, file_name)
     })
-
-
-if __name__ == '__main__':
-    uuid = create_project('testproj', 'jonathan', ['jonathan1', 'mike', 'eric'])
-    proj = get_project(uuid)
-    print(proj.uuid, proj.project_name, proj.owner, proj.contributors)

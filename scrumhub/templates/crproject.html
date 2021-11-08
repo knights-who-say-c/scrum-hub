@@ -30,23 +30,22 @@
 
         <div class="mainback">
             <div class="maincreate">
-                <div>
+                {% set action = '/projectCreate' %}
+                <form action= {{ action }} method="POST">
+                    <div class="mainspace">
+                        <label for="projectName">Project Name</label><br/>
+					    <input type="text" id="projectName" name="projectName" required><br/>
+                    </div>
 					<div class="mainspace">
-						<a href="projectCreate">
-							<button>Essay</button>
-						</a>
+						<input type="submit" value="Essay">
 					</div>
 					<div class="mainspace">
-						<a href="projectCreate">
-							<button>Book</button>
-						</a>
+						<input type="submit" value="Book">
 					</div>
 					<div class="mainspace">
-						<a href="projectCreate">
-							<button>Code</button>
-						</a>
+						<input type="submit" value="Code">
 					</div>
-				</div>
+				</form>
             </div>
         </div>
 

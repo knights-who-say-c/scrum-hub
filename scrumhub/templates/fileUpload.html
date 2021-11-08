@@ -1,9 +1,16 @@
-<div id="popup"> 
-<form name="fileUpload" action="/project/fileUpload" method="post" enctype="multipart/form-data">
-File Name: <input name="filename"/>
-<br/>
-File: <input name="file" type="file"/>
-<br/>
-<input type="submit" name="submit" value="Submit" />
-</form>
-</div> 
+<html>
+	<head><title>File Upload</title></head>
+
+	<body>
+        <div id="popup">
+            {% set action = '/project/fileUpload' %}
+            <form name="fileUpload" action={{ action }} method="POST" enctype="multipart/form-data">
+                <label for="filename">File Name</label><br/>
+                <input type="text" id="filename" name="filename" required><br/>
+                <label for="file">File</label><br/>
+                <input type="file" id="file" name="file" required><br/>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+    </body>
+</html>

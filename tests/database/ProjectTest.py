@@ -27,9 +27,9 @@ class ProjectTest(unittest.TestCase):
 
     def test_create_repo(self):
         try:
-            response = project.create_repo('testrepo')
+            response = project._create_project_repo('testrepo')
         except:
-            response = project.get_repo('testrepo')
+            response = project._get_project_repo('testrepo')
         data = response.get('repositoryMetadata')
         self.branch_name = data.get('defaultBranchName', 'master')
         self.repo_name = data.get('repositoryName')
@@ -43,12 +43,12 @@ class ProjectTest(unittest.TestCase):
             fd.seek(0)
             encoded = base64.b64encode(fd.read())
 
-        response = project.put_file(self.repo_name, self.branch_name, self.commit_id, f'{self.repo_name}/test.txt',
-                                    encoded)
+        response = project._put_file(self.repo_name, self.branch_name, self.commit_id, f'{self.repo_name}/test.txt',
+                                     encoded)
         self.assertEqual(response.get('ResponseMetadata', {}).get('HTTPStatusCode', -1), 200)
 
     def test_delete_repo(self):
-        response = project.delete_repo('testrepo')
+        response = project._delete_project_repo('testrepo')
         self.assertEqual(response.get('ResponseMetadata', {}).get('HTTPStatusCode', -1), 200)
 
 

@@ -1,4 +1,5 @@
 # main.py
+from base64 import b64encode
 from datetime import datetime
 from datetime import date
 from datetime import *
@@ -135,30 +136,37 @@ def projectPage():
         htmlInjectCollabs += ("<p>" + x + "</p> <br/>")
     return render_template("project.html", title = "Project Page", btasks = injectedTasks, files = injectedFiles, name = getDisplayName(), collaborators = htmlInjectCollabs)
 
-@app.route('/projectCreate')
+@app.route('/projectCreate', methods = ["GET", "POST"])
 def projectCreate():
-    session['project_id'] = project.create_project("", session['email'], [])
-    print(session['project_id'])
+    if request.method == 'POST':
+        formData = request.form
+        session['project_id'] = project.create_project(formData['projectName'], session['email'], [])
+        print(session['project_id'])
     return redirect("project", code=301)
 
 
-@app.route('/project/fileUpload', methods = ["GET", "POST"])
+@app.route('/project/fileUpload', methods=["GET", "POST"])
 def fileUploadPage():
+
     if request.method == "GET":
-        return render_template("fileUpload.html", title = "File Upload")
+        return render_template("fileUpload.html", title="File Upload")
+
     elif request.method == "POST":
         formData = request.form
 
         name = formData["filename"]
         name = escapeHTML(name)
-
+        # Get the file as a FileStorage object
         upload = request.files["file"]
+        # Save the filename securely (strip whitespaces, etc.)
         filename = secure_filename(upload.filename)
-        upload = upload.read()
-
-        extension = filename.split(".")[-1]
-
-        database.uploadFile(filename, upload, extension, name)
+        # Encode the file to bytes before uploading to AWS repo
+        upload = b64encode(upload.read())
+        # Get the project from the current user session
+        proj = project.get_project(session['project_id'])
+        # Put the file in the repo
+        proj.put_file(upload, filename)
+        # Redirect back to project homepage
         return redirect("/project", code=301)
 
 @app.route("/project/newTask")

@@ -135,10 +135,12 @@ def projectPage():
         htmlInjectCollabs += ("<p>" + x + "</p> <br/>")
     return render_template("project.html", title = "Project Page", btasks = injectedTasks, files = injectedFiles, name = getDisplayName(), collaborators = htmlInjectCollabs)
 
-@app.route('/projectCreate')
+@app.route('/projectCreate', methods = ["GET", "POST"])
 def projectCreate():
-    session['project_id'] = project.create_project("", session['email'], [])
-    print(session['project_id'])
+    if request.method == 'POST':
+        formData = request.form
+        session['project_id'] = project.create_project(formData['projectName'], session['email'], [])
+        print(session['project_id'])
     return redirect("project", code=301)
 
 

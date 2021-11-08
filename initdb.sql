@@ -11,8 +11,3 @@ TABLESPACE pg_default;
 
 ALTER TABLE public.project
     OWNER to postgres;
-
-INSERT INTO public.project
-(id, name, owner, contributors)
-VALUES
-(gen_random_uuid(), 'test-project', 'jon', '{jon,jacob}');

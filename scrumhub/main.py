@@ -184,7 +184,7 @@ def newIssue():
 @app.route('/profile', methods = ["GET", "POST"])
 def profilePage():
     if request.method == "GET":
-        return render_template("profile.html", title = "Profile")
+        return render_template("profile.html", title = "Profile", name = getDisplayName())
     elif request.method == "POST":
         msg = login.updateProfile(request.form, session)
         flash(msg)

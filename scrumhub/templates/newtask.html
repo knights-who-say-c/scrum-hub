@@ -28,37 +28,39 @@
     
 	<div class = "main">
         <div class="mainback">
-        <div class="userForm">		
-        <form action = "/project/newIssue" method = "POST" enctype="multipart/form-data">
-
- 	
-	<input type="radio" id="story" name="issueType" value="User Story" required>
-	<label for="task">User Story</label><br>
-
- 	
-  	<input type="radio" id="task" name="issueType" value="Task" required>
-	<label for="task">Task</label><br>
-				
-            <label for="title">Title</label><br/>
-            <input type="text" id="title" name="title" required><br/>
-
-            <label for="description">Description</label><br/>
-            <input type="text" id="description" name="description" required><br/>
-
-            <label for="label">Label</label><br/>
-            <input type="text"id="label" name="label" required><br/>
-
-            <label for="assignee">Assignee</label><br/>
-            <input type="text" id="assignee" name="assignee" required><br/>
-
-            <label for="due">Due Date</label><br/>
-            <input type="date" id="due" name="due" required><br/>
-
-            <input type="submit" value="Submit">
-
-        </form>	
-            </div>
-        </div>
+			<div class="maincreate">
+			
+			<form action="/project/newIssue" method="POST" enctype="multipart/form-data">
+	
+		 
+		<input type="radio" style="background-color:#ccc;" id="story" name="issueType" value="User Story" required="">
+		<label for="task" style="color:white;">User Story</label><br>
+	
+		 
+		  <input type="radio" id="task" name="issueType" value="Task" required="">
+		<label for="task" style="color:white;">Task</label><br>
+					
+				<label for="title" style="color:white;">Title</label><br>
+				<input type="text" id="title" name="title" required=""><br>
+	
+				<label for="description" style="color:white;">Description</label><br>
+				<input type="text" id="description" name="description" required=""><br>
+	
+				<label for="label" style="color:white;">Label</label><br>
+				<input type="text" id="label" name="label" required=""><br>
+	
+				<label for="assignee" style="color:white;">Assignee</label><br>
+				<input type="text" id="assignee" name="assignee" required=""><br>
+	
+				<label for="due" style="color:white;">Due Date</label><br>
+				<input type="date" id="due" name="due" required=""><br>
+	
+				<input type="submit" value="Submit">
+	
+			</form>	
+	
+		</div>
+			</div>
 
 	</div>
 

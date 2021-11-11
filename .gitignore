@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-
+.idea/
 
 # C extensions
 *.so
@@ -27,9 +27,6 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
-# Environment variables
-.env
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

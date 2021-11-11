@@ -10,19 +10,6 @@ DATABASE_URL = os.environ['DATABASE_URL']
 DATABASE_PASSWORD = os.environ['DATABASE_PASSWORD']
 
 
-def validEmail(email):
-    at = email.find("@")
-    dot = email.find(".")
-    return at != -1 and dot > at
-
-
-def validPassword(password, confirm):
-    length = len(password) > 6
-    confirmation = password == confirm
-
-    return length and confirmation
-
-
 def handleAddCollab(request, cur):
     """Add a collaborator
     input:      request & cursor
@@ -39,7 +26,7 @@ def handleAddCollab(request, cur):
         email = session['email']
         formData = request.form
         collab_email = formData['email']
-        if validEmail(collab_email):
+        if login.validEmail(collab_email):
             cur.execute("UPDATE public.project SET contributors = array_append(contributors, %s) WHERE id = %s AND owner = %s ",
                         (collab_email, str(session['project_id']), email,))
 

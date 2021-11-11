@@ -218,7 +218,7 @@ form > input[type="submit"] {
   font-family: "Motserrat", sans-serif;
   background-color: white;
   width: 30%;
-  height: 30%;
+  height: auto;
   display: flex;
   justify-content: space-around;
   align-items: center;

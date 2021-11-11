@@ -188,7 +188,8 @@ def projectCreate():
 def fileUploadPage():
 
     if request.method == "GET":
-        return render_template("fileUpload.html", title="File Upload")
+        return render_template("fileUpload.html", title="File Upload", name = getDisplayName())
+
     if request.method == "POST":
         formData = request.form
 
@@ -225,7 +226,7 @@ def newIssue():
 @app.route('/profile', methods=["GET", "POST"])
 def profilePage():
     if request.method == "GET":
-        return render_template("profile.html", title="Profile")
+        return render_template("profile.html", title = "Profile", name = getDisplayName())
     elif request.method == "POST":
         msg = login.updateProfile(request.form, session)
         flash(msg)

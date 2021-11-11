@@ -1,16 +1,36 @@
-<html>
-	<head><title>File Upload</title></head>
+<html><head><title>File Upload</title><link rel="stylesheet" href="/static/main.css"></head>
+    <body><div class="header">
+			<!-- Logo on top left corner. Plain text for now -->
+            <div class="sidenav">
 
-	<body>
+                <a href="/profile" style="text-align: center;">{{name}}</a>
+				<a href="duedate" style="text-align: center;">Due Dates</a>
+				<a href="mytasks" style="text-align: center;">My Tasks</a>
+				<a href="#" style="text-align: center;">Meetings Tool</a>
+                <a href="/profile" style="padding-top:300%;text-align: center;">Settings</a>
+				<!-- <a href="#" style="padding-top:300%;text-align: center;">Settings</a> -->
+            </div>
+
+			<div class="newlogo">
+			    Scrum Hub
+				
+            </div>
+		</div>
+
+	<div class="main">
+            <div class="mainback">
+			<div class="maincreate">
         <div id="popup">
-            {% set action = '/project/fileUpload' %}
-            <form name="fileUpload" action={{ action }} method="POST" enctype="multipart/form-data">
-                <label for="filename">File Name</label><br/>
-                <input type="text" id="filename" name="filename" required><br/>
-                <label for="file">File</label><br/>
-                <input type="file" id="file" name="file" required><br/>
+            
+            <form name="fileUpload" action="/project/fileUpload" method="POST" enctype="multipart/form-data">
+                <label for="filename">File Name</label><br>
+                <input type="text" id="filename" name="filename" required=""><br>
+                <label for="file">File</label><br>
+                <input type="file" id="file" name="file" required=""><br>
                 <input type="submit" value="Submit">
             </form>
         </div>
-    </body>
-</html>
+                </div>
+        </div></div>
+    
+</body></html>

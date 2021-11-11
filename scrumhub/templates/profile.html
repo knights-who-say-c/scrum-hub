@@ -3,9 +3,24 @@
   <link rel="stylesheet" href="/static/main.css">
 </head>
 <body>
+
   <div class="header">
+
     <!-- Logo on top left corner. Plain text for now -->
-    <div class="logo"> <a href = "/home"> Scrum Hub </a> </div>   
+
+    <div class="sidenav">
+                  <a href="/profile" style="text-align: center;">{{name}}</a>
+      <a href="#" style="text-align: center;">Due Dates</a>
+      <a href="#" style="text-align: center;">My Tasks</a>
+      <a href="#" style="text-align: center;">Meetings Tool</a>
+      <a href="/profile" style="padding-top:300%;text-align: center;">Settings</a>
+              </div>
+
+    <div class="newlogo">
+    Scrum Hub
+    <!-- <a href="/login" style="float:right;font-size: large;padding: 20"> Log in </a>
+    <a href="/register" style="float:right;padding-right: 20;font-size: large;padding: 20"> Sign up </a> -->
+    </div>
   </div>
 
   {% with messages = get_flashed_messages() %}
@@ -19,45 +34,54 @@
   {% endwith %}
   {% block body %}{% endblock %}
 
-  <div style="text-align: center;">
-    <img src="static/default-avatar.png" alt="Profile Picture" class="image">
-    <button >Change Picture</button>
-  </div>
+  <div class="main">
+		
 
-  <div style="text-align: center;">
-    <br/>
-    <form action="/profile" method="POST">
-      <label for="text-form-fname">First Name: </label>
-      <input id="text-form-fname" type="text" name="fname"><br/>
+    <div class="mainbackpr">
 
-      <label for="text-form-lname">Last Name: </label>
-      <input id="text-form-lname" type="text" name="lname"><br/>
 
-      <label for="text-form-email">E-mail: </label>
-      <input id="text-form-email" type="text" name="email"><br/>
+<div style="text-align: center;">
+<img src="static/default-avatar.png" alt="Profile Picture" class="image">
+<button>Change Picture</button>
+</div>
 
-      <label for="text-form-password">Password: </label>
-      <input id="text-form-password" type="password" name="password"><br/>
+<div style="text-align: center;">
+<br>
+<form action="/profile" method="POST">
+  <label for="text-form-fname">First Name: </label>
+  <input id="text-form-fname" type="text" name="fname"><br>
 
-      <label for="text-form-cpass">Confirm Password: </label>
-      <input id="text-form-cpass" type="password" name="cpass"><br/>
+  <label for="text-form-lname">Last Name: </label>
+  <input id="text-form-lname" type="text" name="lname"><br>
 
-      <input type="submit" value="Save Changes">
-    </form>
-  </div>
+  <label for="text-form-email">E-mail: </label>
+  <input id="text-form-email" type="text" name="email"><br>
 
-  <h2>Projects</h2>
+  <label for="text-form-password">Password: </label>
+  <input id="text-form-password" type="password" name="password"><br>
 
-  <div class="card">
-    <div class="container">
-      <h4><b>Sample Project 1</b></h4>
-    </div>
-  </div>
-  <br\>
-  <div class="card">
-    <div class="container">
-      <h4><b>Sample Project 2</b></h4>
-    </div>
+  <label for="text-form-cpass">Confirm Password: </label>
+  <input id="text-form-cpass" type="password" name="cpass"><br>
+
+  <input type="submit" value="Save Changes">
+</form>
+</div>
+
+<h2>Projects</h2>
+
+<div class="card">
+<div class="container">
+  <h4><b>Sample Project 1</b></h4>
+</div>
+</div>
+<br\>
+<div class="card">
+<div class="container">
+  <h4><b>Sample Project 2</b></h4>
+</div>
+</div>
+  </br\></div>
   </div>
 </body>
+</html>
 

@@ -2,6 +2,7 @@
 
 from scrumhub import database
 
+
 def createIssue(form):
     issueType = form['issueType']
     title = form['title']

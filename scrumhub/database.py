@@ -44,6 +44,7 @@ def getIssuesInPipeline(pipeline):
     issues = cur.fetchall()
     return [rowToDict("tasks", row) for row in issues]
 
+
 def moveToPipeline(issue, pipeline):
     cur.execute("UPDATE Tasks SET pipeline = %s WHERE id = %s", (pipeline, issue))
 
@@ -60,7 +61,6 @@ def getUploadedFiles():
     if retVal == [None]:
         return []
     return retVal
-
 
 
 def updatePassword(newVal, email):
@@ -91,7 +91,6 @@ def getColumns(table):
 
 def rowToDict(table, row):
     columns = getColumns(table)
-    print(columns)
     retVal = {}
 
     for i in range(len(columns)):

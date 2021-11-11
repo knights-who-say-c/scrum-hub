@@ -77,7 +77,6 @@ def mytasks():
             dued.append(str(i[5]))
 
     htmlInjectTasks = ""
-    print(tasks)
     dued.sort(key=lambda date: datetime.strptime(date, '%Y-%m-%d'))
     today = date.today()
     today = today.strftime("%Y-%m-%d")
@@ -110,7 +109,6 @@ def duedate():
             dued.append(str(i[5]))
 
     htmlInjectTasks = ""
-    print(tasks)
     dued.sort(key=lambda date: datetime.strptime(date, '%Y-%m-%d'))
     today = date.today()
     today = today.strftime("%Y-%m-%d")
@@ -136,7 +134,6 @@ def createProjectPage():
 @app.route('/moveIssue', methods = ["POST"])
 def moveIssue():
     formData = request.form
-    print(formData, flush = True)
     id = formData["id"]
     newPipeline = formData["newPipeline"]
 

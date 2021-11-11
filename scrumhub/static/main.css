@@ -193,10 +193,10 @@ form > input[type="submit"] {
   margin-right: auto;
 }
 
-.modal-bg, move-issue-bg {
+.modal-bg {
   position: fixed;
   width: 100%;
-  height: auto;
+  height: 100vh;
   top: 0;
   left: 0;
   background-color: rgba(0, 0, 0, 0.5);
@@ -213,19 +213,19 @@ form > input[type="submit"] {
   opacity: 1;
 }
 
-.modal, .move-issue {
+.modal {
   position: relative;
   font-family: "Motserrat", sans-serif;
   background-color: white;
   width: 30%;
-  height: 30%;
+  height: auto;
   display: flex;
   justify-content: space-around;
   align-items: center;
   flex-direction: column;
 }
 
-.modal-btn, .move-issue-btn {
+.modal-btn {
   font-family: "Motserrat", sans-serif;
   padding: 10px 30px;
   background-color: greenyellow;
@@ -234,7 +234,7 @@ form > input[type="submit"] {
   cursor: pointer;
 }
 
-.modal-close, .move-issue-close {
+.modal-close {
   position: absolute;
   top: 10px;
   right: 10px;

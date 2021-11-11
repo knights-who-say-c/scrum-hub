@@ -6,19 +6,6 @@ import smtplib
 import ssl
 
 
-def validEmail(email):
-    at = email.find("@")
-    dot = email.find(".")
-    return at != -1 and dot > at
-
-
-def validPassword(password, confirm):
-    length = len(password) > 6
-    confirmation = password == confirm
-
-    return length and confirmation
-
-
 def handleAddCollab(request, cur):
     """Add a collaborator
     input:      request & cursor
@@ -40,7 +27,7 @@ def handleAddCollab(request, cur):
 
         formData = request.form
         collab_email = formData['email']
-        if validEmail(collab_email):
+        if login.validEmail(collab_email):
             cur.execute(
                 "SELECT email FROM testLogins WHERE email = %s", (collab_email,))
             existing = cur.fetchone()

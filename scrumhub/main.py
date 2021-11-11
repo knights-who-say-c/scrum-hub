@@ -149,7 +149,7 @@ def projectCreate():
 def fileUploadPage():
 
     if request.method == "GET":
-        return render_template("fileUpload.html", title="File Upload")
+        return render_template("fileUpload.html", title="File Upload", name = getDisplayName())
 
     elif request.method == "POST":
         formData = request.form

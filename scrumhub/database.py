@@ -45,7 +45,7 @@ def getIssuesInPipeline(pipeline):
     return [rowToDict("tasks", row) for row in issues]
 
 def moveToPipeline(issue, pipeline):
-    cur.execute("UPDATE Tasks SET pipeline = %s WHERE title = %s", (pipeline, issue))
+    cur.execute("UPDATE Tasks SET pipeline = %s WHERE id = %s", (pipeline, issue))
 
 
 def uploadFile(filename, upload, extension, name):
@@ -55,7 +55,12 @@ def uploadFile(filename, upload, extension, name):
 
 def getUploadedFiles():
     cur.execute("SELECT * FROM Uploads")
-    return cur.fetchall()
+    files = cur.fetchall()
+    retVal = [rowToDict("Uploads", result) for result in files]
+    if retVal == [None]:
+        return []
+    return retVal
+
 
 
 def updatePassword(newVal, email):
@@ -92,6 +97,5 @@ def rowToDict(table, row):
     for i in range(len(columns)):
         retVal[columns[i][0]] = row[i]
 
-    print(retVal)
-    sys.stdout.flush()
-    return retVal
+    if retVal != {}:
+        return retVal

@@ -1,8 +1,6 @@
 # task.py
 
 from scrumhub import database
-import sys
-
 
 def createIssue(form):
     issueType = form['issueType']
@@ -16,9 +14,8 @@ def createIssue(form):
 
 
 def issueToHTML(task):
-    print(task)
-    sys.stdout.flush()
-    return "<div>" + task["type"] + "<br/>" + \
+    return "<div>" + str(task["id"]) + "<br/>" + \
+           task["type"] + "<br/>" + \
            task["title"] + "<br/>" + \
            task["description"] + "<br/>" + \
            task["label"] + "<br/>" + \

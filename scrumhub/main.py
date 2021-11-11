@@ -133,13 +133,23 @@ def duedate():
 def createProjectPage():
     return render_template("crproject.html", title="Create New Project", name=getDisplayName())
 
+@app.route('/moveIssue', methods = ["POST"])
+def moveIssue():
+    formData = request.form
+    print(formData, flush = True)
+    id = formData["id"]
+    newPipeline = formData["newPipeline"]
+
+    database.moveToPipeline(id, newPipeline)
+    return redirect("/project", code=301)
 
 @app.route('/project')
 def projectPage():
     uploadedFiles = database.getUploadedFiles()
     injectedFiles = ""
-    for x in uploadedFiles:
-        injectedFiles += ("<p>" + x[3] + "." + x[2] + "</p>")
+
+    for f in uploadedFiles:
+        injectedFiles += ("<p>" + f["simplename"] + "." + f["extension"] + "</p>")
 
     pipelines = ["Backlog", "Planned", "In Progress", "Testing", "Completed", "Closed"]
     IssueHTML = {}

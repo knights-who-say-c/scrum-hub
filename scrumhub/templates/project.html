@@ -5,9 +5,46 @@
 	</head>
 
 	<body>
-        <button class="modal-btn" style="float: right;font-size: large;padding: 20;">Add Collaborator</button>
-        
-        <div class="modal-bg">
+
+    <button class="modal-btn" id="move-issue-btn" style="float: right;font-size: large;padding: 20;">Move Issue</button>
+    <div class="modal-bg" id="move-issue-bg">
+        <div class="modal">
+            <h2>Move Issue</h2>
+            <form action="/moveIssue" method="POST">
+                <label for="id">Issue Number: </label>
+                <input type="text" name="id" required>
+
+                <br/> <h1> Move to </h1> <br/>
+
+
+                <input type="radio" id="backlog" name="newPipeline" value = "Backlog" required>
+                <label for="backlog">Backlog</label> <br/>
+
+                <input type="radio" id="planned" name="newPipeline" value = "Planned" required>
+                <label for="planned">Planned</label> <br/>
+
+                <input type="radio" id="inProgress" name="newPipeline" value = "In Progress" required>
+                <label for="inProgress">In Progress</label> <br/>
+
+                <input type="radio" id="testing" name="newPipeline" value = "Testing" required>
+                <label for="testing">Testing</label> <br/>
+
+                <input type="radio" id="completed" name="newPipeline" value = "Completed" required>
+                <label for="completed">Completed</label> <br/>
+
+                <input type="radio" id="closed" name="newPipeline" value = "Closed" required>
+                <label for="Closed">Closed</label> <br/>
+
+
+                <input type="submit" class="move-issue-btn" value="Move Issue">
+            </form>
+            <span class="modal-close" id="move-issue-close">X</span>
+        </div>
+    </div>
+
+        <button class="modal-btn" id="add-collab-btn" style="float: right;font-size: large;padding: 20;">Add Collaborator</button>
+
+        <div class="modal-bg" id="add-collab-bg">
             <div class="modal">
                 <h2>Invite a collaborator</h2>
                 <form action="/addCollab" method="POST">
@@ -16,10 +53,11 @@
                     
                     <input type="submit" class="modal-btn" value="Add">
                 </form>
-                
-                <span class="modal-close">X</span>
+                <span class="modal-close" id="add-collab-close">X</span>
             </div>
         </div>
+
+
 
 		<div class = "header">
 			<!-- Logo on top left corner. Plain text for now -->
@@ -36,7 +74,6 @@
 			    Scrum Hub
 				<a href="/project/fileUpload" style="float:right;font-size: large;padding: 20"> Add a File </a>
 				<a href="/project/newIssue" style="float:right;font-size: large;padding: 20"> Create an Issue </a>
-				<a href="#" style="float:right;font-size: large;padding: 20"> Add a Collaborator </a>
             </div>
 		</div>
 
@@ -79,7 +116,7 @@
     	</div>
         
         <script src="../static/project.js"></script>
-        <script type="text/javascript" src="../static/modal.js"></script>
+        <script type="text/javascript" src="/static/modal.js"></script>
 
     </body>
 

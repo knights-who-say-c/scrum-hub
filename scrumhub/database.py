@@ -6,7 +6,6 @@ import sys
 
 DATABASE_URL = os.environ['DATABASE_URL']
 
-//Documentation says to always require ssl
 db = psycopg2.connect(DATABASE_URL, sslmode='require')
 cur = db.cursor()
 db.autocommit = True

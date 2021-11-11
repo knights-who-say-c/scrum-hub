@@ -6,7 +6,7 @@
 
 	<body>
 
-<button class="modal-btn" id="move-issue-btn" style="float: right;font-size: large;padding: 20;">Move Issue</button>
+    <button class="modal-btn" id="move-issue-btn" style="float: right;font-size: large;padding: 20;">Move Issue</button>
     <div class="modal-bg" id="move-issue-bg">
         <div class="modal">
             <h2>Move Issue</h2>
@@ -42,8 +42,6 @@
         
         <button class="modal-btn" href="#modal1" style="float: right;font-size: large;padding: 20;">Add Collaborator</button>        
         <div id="modal1" class="modal-bg">
-
-        <div class="modal-bg" id="add-collab-bg">
             <div class="modal">
                 <h2>Invite a collaborator</h2>
                 <form action="/addCollab" method="POST">
@@ -52,7 +50,8 @@
                     
                     <input type="submit" class="modal-btn" value="Add">
                 </form>
-                <span class="modal-close" id="add-collab-close">X</span>
+                
+                <span class="modal-close">X</span>
             </div>
         </div>
 

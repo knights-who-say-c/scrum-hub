@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>File Upload</title>
+    <title>File Viewer</title>
     <link rel="stylesheet" href="/static/main.css">
 </head>
 <body>
@@ -25,15 +25,15 @@
 <div class="main">
     <div class="mainback">
         <div class="maincreate">
-            <div id="popup">
-                <form name="fileUpload" action="/project/fileUpload" method="POST" enctype="multipart/form-data">
-                    <label for="filename">File Name</label><br>
-                    <input type="text" id="filename" name="filename" required=""><br>
-                    <label for="file">File</label><br>
-                    <input type="file" id="file" name="file" required=""><br>
-                    <input type="submit" value="Submit">
-                </form>
-            </div>
+            <ul>
+                <li><h4><b>Directory</b></h4></li>
+                {% for dir in dirnames %}
+                    <li>{{ dir }}</li>
+                {% endfor %}
+                {% for file in filenames %}
+                    <li>{{ file }}</li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
 </div>

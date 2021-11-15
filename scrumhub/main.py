@@ -13,6 +13,7 @@ from scrumhub import task
 from scrumhub import login
 from scrumhub import database
 from scrumhub import collab
+from scrumhub.project import filesystem
 
 app = Flask(__name__)
 app.secret_key = "testkey1"
@@ -64,12 +65,12 @@ def registrationPage():
     if request.method == "GET":
         return render_template("login.html", title = "Sign Up")
     elif request.method == 'POST':
-        msg = login.register(request.form) 
-        return render_template("login.html", title = "Sign Up", feedback = msg)  
+        msg = login.register(request.form)
+        return render_template("login.html", title = "Sign Up", feedback = msg)
 
 @app.route('/mytasks')
 def mytasks():
-    
+
     tasks = database.getTasks()
     dued = []
     for i in tasks:
@@ -92,11 +93,11 @@ def mytasks():
                         htmlInjectTasks += ("<div class=" + "due" + ">" +  str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" + str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  + "OverDued" + "</div>")
                     else:
                         htmlInjectTasks += ("<div class=" + "notdue" + ">" + str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" +  str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  +  "</div>")
-    return render_template("mytasks.html", title = "my Tasks Page", due = htmlInjectTasks, name = getDisplayName())  
+    return render_template("mytasks.html", title = "my Tasks Page", due = htmlInjectTasks, name = getDisplayName())
 
 @app.route('/duedate')
 def duedate():
-    
+
     tasks = database.getTasks()
     dued = []
     for i in tasks:
@@ -115,7 +116,7 @@ def duedate():
                     htmlInjectTasks += ("<div class=" + "due" + ">" +  str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" + str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  + "OverDued" + "</div>")
                 else:
                     htmlInjectTasks += ("<div class=" + "notdue" + ">" +  str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" +  str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  +  "</div>")
-    return render_template("duedate.html", title = "Due Dates Page", due = htmlInjectTasks, name = getDisplayName())  
+    return render_template("duedate.html", title = "Due Dates Page", due = htmlInjectTasks, name = getDisplayName())
 
 @app.route('/crproject')
 def createProjectPage():
@@ -151,6 +152,10 @@ def projectPage():
                            inProgress=IssueHTML["In Progress"], testing=IssueHTML["Testing"], completed=IssueHTML["Completed"],
                            closed=IssueHTML["Closed"], files=injectedFiles, name=getDisplayName())
 
+@app.route('/project/files')
+def projectFiles():
+    filesystem.load_project_dir('/')
+
 @app.route('/projectCreate', methods = ["GET", "POST"])
 def projectCreate():
     if request.method == 'POST':
@@ -176,7 +181,7 @@ def fileUploadPage():
         # Save the filename securely (strip whitespaces, etc.)
         filename = secure_filename(upload.filename)
         # Encode the file to bytes before uploading to AWS repo
-        upload = b64encode(upload.read())
+        upload = upload.read()
         # Get the project from the current user session
         proj = project.get_project(session['project_id'])
         # Put the file in the repo
@@ -204,8 +209,8 @@ def profilePage():
         msg = login.updateProfile(request.form, session)
         flash(msg)
         return redirect("/profile", code=301)
-    
-  
+
+
 @app.route('/addCollab', methods=['POST', 'GET'])
 def handleAddCollab():
     collab.handleAddCollab(request, database.cur)

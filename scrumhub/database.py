@@ -98,3 +98,7 @@ def rowToDict(table, row):
 
     if retVal != {}:
         return retVal
+
+def getTasks():
+    cur.execute("SELECT * FROM Tasks")
+    return cur.fetchall()

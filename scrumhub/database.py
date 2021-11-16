@@ -2,17 +2,16 @@
 
 import os
 import psycopg2
-import sys
 
 DATABASE_URL = os.environ['DATABASE_URL']
 
-db = psycopg2.connect(DATABASE_URL, sslmode='require')
+db = psycopg2.connect(DATABASE_URL)
 cur = db.cursor()
 db.autocommit = True
 
 cur.execute("CREATE TABLE IF NOT EXISTS Logins (firstName text, lastName text, email text, password text)")
 cur.execute("CREATE TABLE IF NOT EXISTS Uploads (fileName text, file bytea, extension text, simpleName text)")
-cur.execute("CREATE TABLE IF NOT EXISTS Tasks (type text, title text, description text, label text, assignee text, dueDate date, pipeline text)")
+cur.execute("CREATE TABLE IF NOT EXISTS Tasks (type text, title text, description text, label text, assignee text, dueDate date, pipeline text, id serial, project text)")
 
 
 def createAccount(first, last, email, password):
@@ -34,19 +33,19 @@ def getFirstName(email):
     return cur.fetchone()[0]
 
 
-def getIssues():
-    cur.execute("SELECT * FROM Tasks")
+def getIssues(projectID):
+    cur.execute("SELECT * FROM Tasks WHERE project = %ss", (projectID,))
     return cur.fetchall()
 
 
-def getIssuesInPipeline(pipeline):
-    cur.execute("SELECT * FROM Tasks WHERE pipeline = %s", (pipeline,))
+def getIssuesInPipeline(pipeline, projectID):
+    cur.execute("SELECT * FROM Tasks WHERE pipeline = %s AND project = %s", (pipeline, projectID))
     issues = cur.fetchall()
     return [rowToDict("tasks", row) for row in issues]
 
 
-def moveToPipeline(issue, pipeline):
-    cur.execute("UPDATE Tasks SET pipeline = %s WHERE id = %s", (pipeline, issue))
+def moveToPipeline(issue, pipeline, projectID):
+    cur.execute("UPDATE Tasks SET pipeline = %s WHERE id = %s AND project=%s", (pipeline, issue, projectID))
 
 
 def uploadFile(filename, upload, extension, name):
@@ -79,9 +78,9 @@ def updateEmail(newVal, email):
     cur.execute("UPDATE Logins SET email = %s WHERE email = %s", (newVal, email))
 
 
-def createIssue(issueType, title, description, label, assignee, dueDate):
-    cur.execute("INSERT INTO Tasks (type, title, description, label, assignee, dueDate, pipeline) VALUES(%s, %s, %s, %s, %s, %s, %s)",
-                (issueType, title, description, label, assignee, dueDate, "Backlog"))
+def createIssue(issueType, title, description, label, assignee, dueDate, projectId):
+    cur.execute("INSERT INTO Tasks (type, title, description, label, assignee, dueDate, pipeline, project) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)",
+                (issueType, title, description, label, assignee, dueDate, "Backlog", projectId))
 
 
 def getColumns(table):
@@ -99,6 +98,6 @@ def rowToDict(table, row):
     if retVal != {}:
         return retVal
 
-def getTasks():
-    cur.execute("SELECT * FROM Tasks")
+def getCollabs(project_id):
+    cur.execute(f"SELECT contributors FROM public.project WHERE id = '{project_id}'")
     return cur.fetchall()

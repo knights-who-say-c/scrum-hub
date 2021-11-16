@@ -102,3 +102,7 @@ def rowToDict(table, row):
 def getTasks():
     cur.execute("SELECT * FROM Tasks")
     return cur.fetchall()
+
+def createTask(type, title, description, label, assignee, dueDate):
+    cur.execute("INSERT INTO Tasks (type, title, description, label, assignee, dueDate) VALUES(%s, %s, %s, %s, %s, %s)", (type, title, description, label, assignee, dueDate))
+   

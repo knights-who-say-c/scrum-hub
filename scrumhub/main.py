@@ -89,9 +89,9 @@ def mytasks():
                 name = getDisplayName()
                 if name == str(x[4]):
                     if i <= today:
-                        htmlInjectTasks += ("<div class=" + "due" + ">" +  str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" + str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  + "OverDued" + "</div>")
+                        htmlInjectTasks += ("<div class=" + "due" + ">" + "<h3>" + str(session['projectName']) + "</h3>" +"<br/>" + str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" + str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  + "OverDued" + "</div>")
                     else:
-                        htmlInjectTasks += ("<div class=" + "notdue" + ">" + str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" +  str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  +  "</div>")
+                        htmlInjectTasks += ("<div class=" + "notdue" + ">" + "<h3>" + str(session['projectName']) + "</h3>" + "<br/>" + str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" +  str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  +  "</div>")
     return render_template("mytasks.html", title = "my Tasks Page", due = htmlInjectTasks, name = getDisplayName())  
 
 @app.route('/duedate')
@@ -156,6 +156,7 @@ def projectCreate():
     if request.method == 'POST':
         formData = request.form
         session['project_id'] = project.create_project(formData['projectName'], session['email'], [])
+        session['projectName'] = formData['projectName']
         print(session['project_id'])
     return redirect("project", code=301)
 
@@ -193,7 +194,7 @@ def newIssue():
     if request.method == "GET":
         return render_template("newtask.html", name = getDisplayName())
     elif request.method == "POST":
-        task.createTask(request.form, database.cur)
+        task.createIssue(request.form)
         return redirect("/project", code=301)
 
 @app.route('/profile', methods = ["GET", "POST"])

@@ -70,7 +70,7 @@ def registrationPage():
 @app.route('/mytasks')
 def mytasks():
     
-    tasks = database.getTasks()
+    tasks = database.getIssues(session["project_id"])
     dued = []
     for i in tasks:
         if str(i[4]) not in dued:
@@ -97,7 +97,7 @@ def mytasks():
 @app.route('/duedate')
 def duedate():
     
-    tasks = database.getTasks()
+    tasks = database.getIssues(session["project_id"])
     dued = []
     for i in tasks:
         if str(i[4]) not in dued:
@@ -127,7 +127,7 @@ def moveIssue():
     id = formData["id"]
     newPipeline = formData["newPipeline"]
 
-    database.moveToPipeline(id, newPipeline)
+    database.moveToPipeline(id, newPipeline, session["project_id"])
     return redirect("/project", code=301)
 
 @app.route('/project')
@@ -143,7 +143,7 @@ def projectPage():
 
     for pipeline in pipelines:
         pipelineHTML = ""
-        for issue in database.getIssuesInPipeline(pipeline):
+        for issue in database.getIssuesInPipeline(pipeline, session["project_id"]):
             pipelineHTML += task.issueToHTML(issue) + "<br/>"
         IssueHTML[pipeline] = pipelineHTML
 
@@ -158,7 +158,7 @@ def projectCreate():
         session['project_id'] = project.create_project(formData['projectName'], session['email'], [])
         session['projectName'] = formData['projectName']
         print(session['project_id'])
-    return redirect("project", code=301)
+        return redirect("project", code=301)
 
 
 @app.route('/project/fileUpload', methods=["GET", "POST"])
@@ -167,7 +167,7 @@ def fileUploadPage():
     if request.method == "GET":
         return render_template("fileUpload.html", title="File Upload", name = getDisplayName())
 
-    elif request.method == "POST":
+    if request.method == "POST":
         formData = request.form
 
         name = formData["filename"]
@@ -193,15 +193,15 @@ def newTask():
 def newIssue():
     if request.method == "GET":
         return render_template("newtask.html", name = getDisplayName())
-    elif request.method == "POST":
-        task.createIssue(request.form)
+    if request.method == "POST":
+        task.createIssue(request.form, session["project_id"])
         return redirect("/project", code=301)
 
 @app.route('/profile', methods = ["GET", "POST"])
 def profilePage():
     if request.method == "GET":
         return render_template("profile.html", title = "Profile", name = getDisplayName())
-    elif request.method == "POST":
+    if request.method == "POST":
         msg = login.updateProfile(request.form, session)
         flash(msg)
         return redirect("/profile", code=301)

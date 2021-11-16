@@ -3,7 +3,7 @@
 from scrumhub import database
 
 
-def createIssue(form):
+def createIssue(form, projectID):
     issueType = form['issueType']
     title = form['title']
     description = form['description']
@@ -11,10 +11,11 @@ def createIssue(form):
     assignee = form['assignee']
     dueDate = form['due']
 
-    database.createIssue(issueType, title, description, label, assignee, dueDate)
+    database.createIssue(issueType, title, description, label, assignee, dueDate, projectID)
 
 
 def issueToHTML(task):
+    print(task, flush=True)
     return "<div>" + str(task["id"]) + "<br/>" + \
            task["type"] + "<br/>" + \
            task["title"] + "<br/>" + \

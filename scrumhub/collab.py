@@ -4,10 +4,8 @@ import psycopg2
 from werkzeug.utils import secure_filename
 import smtplib
 import ssl
-import psycopg2 as pg
 
-DATABASE_URL = os.environ['DATABASE_URL']
-DATABASE_PASSWORD = os.environ['DATABASE_PASSWORD']
+from scrumhub import database
 
 
 def validEmail(email):
@@ -54,21 +52,3 @@ def handleAddCollab(request, cur):
                 """.format(email, collab_email, email)
 
                 server.sendmail(sender_email, collab_email, msg)
-
-
-def get_collabs(project_id):
-    sql_string = f"SELECT contributors FROM public.project WHERE id = '{project_id}'"
-    conn = pg.connect(DATABASE_URL, password=DATABASE_PASSWORD, sslmode='prefer')
-    conn.autocommit = True
-    results = []
-
-    try:
-        with conn:
-            with conn.cursor() as cur:
-                cur.execute(sql_string)
-                results = cur.fetchall()
-
-    finally:
-        conn.close()
-
-    return results

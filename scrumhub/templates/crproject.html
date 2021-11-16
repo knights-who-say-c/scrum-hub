@@ -16,7 +16,6 @@
 				<a href="#" style="text-align: center;">Due Dates</a>
 				<a href="#" style="text-align: center;">My Tasks</a>
 				<a href="#" style="text-align: center;">Meetings Tool</a>
-				<a href="/profile" style="padding-top:300%;text-align: center;">Settings</a>
             </div>
 
 			<div class="newlogo">
@@ -30,8 +29,7 @@
 
         <div class="mainback">
             <div class="maincreate">
-                {% set action = '/projectCreate' %}
-                <form action= {{ action }} method="POST">
+                <form action= '/projectCreate' method="POST">
                     <div class="mainspace">
                         <label for="projectName">Project Name</label><br/>
 					    <input type="text" id="projectName" name="projectName" required><br/>

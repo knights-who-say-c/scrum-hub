@@ -42,7 +42,7 @@ def indexPage():
 
 @app.route('/home')
 def homePage():
-    return render_template("home.html", name = getDisplayName())
+    return render_template("home.html")
 
 
 @app.route('/login', methods = ['GET', 'POST'])
@@ -92,7 +92,7 @@ def mytasks():
                         htmlInjectTasks += ("<div class=" + "due" + ">" + "<h3>" + str(session['projectName']) + "</h3>" +"<br/>" + str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" + str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  + "OverDued" + "</div>")
                     else:
                         htmlInjectTasks += ("<div class=" + "notdue" + ">" + "<h3>" + str(session['projectName']) + "</h3>" + "<br/>" + str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" +  str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  +  "</div>")
-    return render_template("mytasks.html", title = "my Tasks Page", due = htmlInjectTasks, name = getDisplayName())  
+    return render_template("mytasks.html", title = "my Tasks Page", due = htmlInjectTasks)  
 
 @app.route('/duedate')
 def duedate():
@@ -115,11 +115,11 @@ def duedate():
                     htmlInjectTasks += ("<div class=" + "due" + ">" +  str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" + str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  + "OverDued" + "</div>")
                 else:
                     htmlInjectTasks += ("<div class=" + "notdue" + ">" +  str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" +  str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  +  "</div>")
-    return render_template("duedate.html", title = "Due Dates Page", due = htmlInjectTasks, name = getDisplayName())  
+    return render_template("duedate.html", title = "Due Dates Page", due = htmlInjectTasks)  
 
 @app.route('/crproject')
 def createProjectPage():
-    return render_template("crproject.html", title = "Create New Project", name = getDisplayName())
+    return render_template("crproject.html", title = "Create New Project")
 
 @app.route('/moveIssue', methods = ["POST"])
 def moveIssue():
@@ -165,7 +165,7 @@ def projectCreate():
 def fileUploadPage():
 
     if request.method == "GET":
-        return render_template("fileUpload.html", title="File Upload", name = getDisplayName())
+        return render_template("fileUpload.html", title="File Upload")
 
     if request.method == "POST":
         formData = request.form
@@ -192,7 +192,7 @@ def newTask():
 @app.route("/project/newIssue", methods = ["GET", "POST"])
 def newIssue():
     if request.method == "GET":
-        return render_template("newtask.html", name = getDisplayName())
+        return render_template("newtask.html")
     if request.method == "POST":
         task.createIssue(request.form, session["project_id"])
         return redirect("/project", code=301)
@@ -200,7 +200,7 @@ def newIssue():
 @app.route('/profile', methods = ["GET", "POST"])
 def profilePage():
     if request.method == "GET":
-        return render_template("profile.html", title = "Profile", name = getDisplayName())
+        return render_template("profile.html", title = "Profile")
     if request.method == "POST":
         msg = login.updateProfile(request.form, session)
         flash(msg)
@@ -218,7 +218,7 @@ def handle_my_projects():
     injected_projects = []
     for proj in my_projects:
         injected_projects.append((proj._name, proj._uuid))
-    return render_template("myprojects.html", title="My Projects", name = getDisplayName(), len = len(injected_projects), Projects=injected_projects)
+    return render_template("myprojects.html", title="My Projects", len = len(injected_projects), Projects=injected_projects)
 
 @app.route('/open_project', methods=['POST'])
 def open_project():

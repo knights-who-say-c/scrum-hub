@@ -17,8 +17,7 @@
 				<a href="mytasks" style="text-align: center;">My Tasks</a>
 				<a href="/my_projects" style="text-align: center;">My Projects</a>
 				<a href="#" style="text-align: center;">Meetings Tool</a>
-                <a href="/profile" style="padding-top:300%;text-align: center;">Settings</a>
-            </div>
+      </div>
 
 			<div class="newlogo">
 			Scrum Hub
@@ -31,8 +30,7 @@
 
         <div class="mainback">
             <div class="maincreate">
-                {% set action = '/projectCreate' %}
-                <form action= {{ action }} method="POST">
+                <form action= '/projectCreate' method="POST">
                     <div class="mainspace">
                         <label for="projectName">Project Name</label><br/>
 					    <input type="text" id="projectName" name="projectName" required><br/>

@@ -1,0 +1,52 @@
+<html>
+
+<head>
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="/static/main.css" />
+
+</head>
+
+<body>
+
+    <div class="header">
+
+        <!-- Logo on top left corner. Plain text for now -->
+
+        <div class="sidenav">
+            <a href="/profile" style="text-align: center;">{{name}}</a>
+            <a href="duedate" style="text-align: center;">Due Dates</a>
+            <a href="mytasks" style="text-align: center;">My Tasks</a>
+            <a href="/my_projects" style="text-align: center;">My Projects</a>
+            <a href="#" style="text-align: center;">Meetings Tool</a>
+            <a href="/profile" style="padding-top:300%;text-align: center;">Settings</a>
+        </div>
+
+        <div class="newlogo">
+            Scrum Hub
+        </div>
+
+    </div>
+
+    <div class="main">
+
+        <div class="rows" style="background-color:#ccc;">
+            <h2>My Projects</h2>
+            {% for i in range(0, len) %}
+            <div class="card">
+                <div class="container">
+                    <h4><b>{{ Projects[i][0] }}</b></h4>
+                    <form action="/open_project" method="post">
+                        <input type="hidden" id="uuid" name="uuid" value={{Projects[i][1]}}>
+                        <button type="submit" value="Open Project">Open Project</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+
+</body>
+
+</html>

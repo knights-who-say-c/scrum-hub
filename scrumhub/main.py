@@ -211,3 +211,16 @@ def profilePage():
 def handleAddCollab():
     collab.handleAddCollab(request, database.cur)
     return redirect("/project", code=301)
+
+@app.route('/my_projects')
+def handle_my_projects():
+    my_projects = project.get_my_projects(session['email'])
+    injected_projects = []
+    for proj in my_projects:
+        injected_projects.append((proj._name, proj._uuid))
+    return render_template("myprojects.html", title="My Projects", name = getDisplayName(), len = len(injected_projects), Projects=injected_projects)
+
+@app.route('/open_project', methods=['POST'])
+def open_project():
+    session['project_id'] = request.form['uuid']
+    return redirect("/project", code=301)

@@ -4,6 +4,8 @@ import os
 import psycopg2
 
 DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_PASSWORD = os.environ.get('DATABASE_PASSWORD')
+
 
 db = psycopg2.connect(DATABASE_URL)
 cur = db.cursor()

@@ -36,7 +36,7 @@ def getFirstName(email):
 
 
 def getIssues(projectID):
-    cur.execute("SELECT * FROM Tasks WHERE project = %ss", (projectID,))
+    cur.execute("SELECT * FROM Tasks WHERE project = %s", (projectID,))
     return cur.fetchall()
 
 

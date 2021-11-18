@@ -147,9 +147,15 @@ def projectPage():
             pipelineHTML += task.issueToHTML(issue) + "<br/>"
         IssueHTML[pipeline] = pipelineHTML
 
+    # rendering the list of collaborators depends on session['project_id']
+    htmlInjectCollabs = ""
+    collabs = collab.get_collabs(session['project_id'])
+    for x in collabs[0][0]:
+        htmlInjectCollabs += ("<p>" + x + "</p> <br/>")
+
     return render_template("project.html", title="Project Page", backlog=IssueHTML["Backlog"], planned=IssueHTML["Planned"],
                            inProgress=IssueHTML["In Progress"], testing=IssueHTML["Testing"], completed=IssueHTML["Completed"],
-                           closed=IssueHTML["Closed"], files=injectedFiles, name=getDisplayName())
+                           closed=IssueHTML["Closed"], files=injectedFiles, name=getDisplayName(), collaborators=htmlInjectCollabs)
 
 @app.route('/projectCreate', methods = ["GET", "POST"])
 def projectCreate():

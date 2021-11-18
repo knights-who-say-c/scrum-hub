@@ -1,12 +1,12 @@
 from flask import *
 import os
-import psycopg2
-from werkzeug.utils import secure_filename
 import smtplib
+from email.message import EmailMessage
 import ssl
+import psycopg2 as pg
 
-from scrumhub import database
-
+DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_PASSWORD = os.environ['DATABASE_PASSWORD']
 
 def validEmail(email):
     at = email.find("@")
@@ -44,11 +44,27 @@ def handleAddCollab(request, cur):
             with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
                 sender_email = "scrumhubwebapp@gmail.com"
                 server.login(sender_email, password)
+                msg = EmailMessage()
+                msg.set_content(f'{email} has invited you to their project on ScrumHub!')
+                msg['Subject'] = '[ScrumHub] Project Invitation'
+                msg['From'] = sender_email
+                msg['To'] = collab_email
+                server.send_message(msg)
 
-                msg = """From: {}
-                To: {}\n
-                Subject: [ScrumHub] Project Invitation\n
-                {} has invited you to their project on ScrumHub!.\n
-                """.format(email, collab_email, email)
 
-                server.sendmail(sender_email, collab_email, msg)
+def get_collabs(project_id):
+    sql_string = f"SELECT contributors FROM public.project WHERE id = '{project_id}'"
+    conn = pg.connect(DATABASE_URL, password=DATABASE_PASSWORD, sslmode='prefer')
+    conn.autocommit = True
+    results = []
+
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(sql_string)
+                results = cur.fetchall()
+
+    finally:
+        conn.close()
+
+    return results

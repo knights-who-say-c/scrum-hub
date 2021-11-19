@@ -43,7 +43,7 @@ def indexPage():
 
 @app.route('/home')
 def homePage():
-    return render_template("home.html", name = getDisplayName())
+    return render_template("home.html")
 
 
 @app.route('/login', methods = ['GET', 'POST'])
@@ -70,8 +70,8 @@ def registrationPage():
 
 @app.route('/mytasks')
 def mytasks():
-
-    tasks = database.getTasks()
+    
+    tasks = database.getIssues(session["project_id"])
     dued = []
     for i in tasks:
         if str(i[4]) not in dued:
@@ -90,15 +90,15 @@ def mytasks():
                 name = getDisplayName()
                 if name == str(x[4]):
                     if i <= today:
-                        htmlInjectTasks += ("<div class=" + "due" + ">" +  str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" + str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  + "OverDued" + "</div>")
+                        htmlInjectTasks += ("<div class=" + "due" + ">" + "<h3>" + str(session['projectName']) + "</h3>" +"<br/>" + str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" + str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  + "OverDued" + "</div>")
                     else:
-                        htmlInjectTasks += ("<div class=" + "notdue" + ">" + str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" +  str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  +  "</div>")
-    return render_template("mytasks.html", title = "my Tasks Page", due = htmlInjectTasks, name = getDisplayName())
+                        htmlInjectTasks += ("<div class=" + "notdue" + ">" + "<h3>" + str(session['projectName']) + "</h3>" + "<br/>" + str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" +  str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  +  "</div>")
+    return render_template("mytasks.html", title = "my Tasks Page", due = htmlInjectTasks)  
 
 @app.route('/duedate')
 def duedate():
-
-    tasks = database.getTasks()
+    
+    tasks = database.getIssues(session["project_id"])
     dued = []
     for i in tasks:
         if str(i[4]) not in dued:
@@ -116,11 +116,11 @@ def duedate():
                     htmlInjectTasks += ("<div class=" + "due" + ">" +  str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" + str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  + "OverDued" + "</div>")
                 else:
                     htmlInjectTasks += ("<div class=" + "notdue" + ">" +  str(x[0]) + "<br/>" +  str(x[1]) + "<br/>" +  str(x[2]) + "<br/>" +  str(x[3]) + "<br/>" +  str(x[4]) + "<br/>"  + str(x[5]) + "<br/>"  +  "</div>")
-    return render_template("duedate.html", title = "Due Dates Page", due = htmlInjectTasks, name = getDisplayName())
+    return render_template("duedate.html", title = "Due Dates Page", due = htmlInjectTasks)  
 
 @app.route('/crproject')
 def createProjectPage():
-    return render_template("crproject.html", title = "Create New Project", name = getDisplayName())
+    return render_template("crproject.html", title = "Create New Project")
 
 @app.route('/moveIssue', methods = ["POST"])
 def moveIssue():
@@ -128,7 +128,7 @@ def moveIssue():
     id = formData["id"]
     newPipeline = formData["newPipeline"]
 
-    database.moveToPipeline(id, newPipeline)
+    database.moveToPipeline(id, newPipeline, session["project_id"])
     return redirect("/project", code=301)
 
 @app.route('/project')
@@ -144,13 +144,19 @@ def projectPage():
 
     for pipeline in pipelines:
         pipelineHTML = ""
-        for issue in database.getIssuesInPipeline(pipeline):
+        for issue in database.getIssuesInPipeline(pipeline, session["project_id"]):
             pipelineHTML += task.issueToHTML(issue) + "<br/>"
         IssueHTML[pipeline] = pipelineHTML
 
+    # rendering the list of collaborators depends on session['project_id']
+    htmlInjectCollabs = ""
+    collabs = collab.get_collabs(session['project_id'])
+    for x in collabs[0][0]:
+        htmlInjectCollabs += ("<p>" + x + "</p> <br/>")
+
     return render_template("project.html", title="Project Page", backlog=IssueHTML["Backlog"], planned=IssueHTML["Planned"],
                            inProgress=IssueHTML["In Progress"], testing=IssueHTML["Testing"], completed=IssueHTML["Completed"],
-                           closed=IssueHTML["Closed"], files=injectedFiles, name=getDisplayName())
+                           closed=IssueHTML["Closed"], files=injectedFiles, name=getDisplayName(), collaborators=htmlInjectCollabs)
 
 @app.route('/project/files')
 def projectFiles():
@@ -161,17 +167,18 @@ def projectCreate():
     if request.method == 'POST':
         formData = request.form
         session['project_id'] = project.create_project(formData['projectName'], session['email'], [])
+        session['projectName'] = formData['projectName']
         print(session['project_id'])
-    return redirect("project", code=301)
+        return redirect("project", code=301)
 
 
 @app.route('/project/fileUpload', methods=["GET", "POST"])
 def fileUploadPage():
 
     if request.method == "GET":
-        return render_template("fileUpload.html", title="File Upload", name = getDisplayName())
+        return render_template("fileUpload.html", title="File Upload")
 
-    elif request.method == "POST":
+    if request.method == "POST":
         formData = request.form
 
         name = formData["filename"]
@@ -196,16 +203,16 @@ def newTask():
 @app.route("/project/newIssue", methods = ["GET", "POST"])
 def newIssue():
     if request.method == "GET":
-        return render_template("newtask.html", name = getDisplayName())
-    elif request.method == "POST":
-        task.createTask(request.form, database.cur)
+        return render_template("newtask.html")
+    if request.method == "POST":
+        task.createIssue(request.form, session["project_id"])
         return redirect("/project", code=301)
 
 @app.route('/profile', methods = ["GET", "POST"])
 def profilePage():
     if request.method == "GET":
-        return render_template("profile.html", title = "Profile", name = getDisplayName())
-    elif request.method == "POST":
+        return render_template("profile.html", title = "Profile")
+    if request.method == "POST":
         msg = login.updateProfile(request.form, session)
         flash(msg)
         return redirect("/profile", code=301)
@@ -214,4 +221,17 @@ def profilePage():
 @app.route('/addCollab', methods=['POST', 'GET'])
 def handleAddCollab():
     collab.handleAddCollab(request, database.cur)
+    return redirect("/project", code=301)
+
+@app.route('/my_projects')
+def handle_my_projects():
+    my_projects = project.get_my_projects(session['email'])
+    injected_projects = []
+    for proj in my_projects:
+        injected_projects.append((proj._name, proj._uuid))
+    return render_template("myprojects.html", title="My Projects", len = len(injected_projects), Projects=injected_projects)
+
+@app.route('/open_project', methods=['POST'])
+def open_project():
+    session['project_id'] = request.form['uuid']
     return redirect("/project", code=301)

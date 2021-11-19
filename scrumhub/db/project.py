@@ -221,6 +221,39 @@ def get_project(uuid):
 
     return Project(*results) if results else None
 
+def get_my_projects(owner):
+    """Query existing project on the database by its owner.
+
+    Parameters
+    ----------
+    owner : str
+        owner of the project(s).
+
+    Returns
+    -------
+    project_list : [Project]
+        A project object containing metadata and functions. If no matching
+        projects were found, then None is returned.
+    """
+    sql_string = f"SELECT * FROM public.project WHERE owner = '{owner}'"
+    conn = pg.connect(DATABASE_URL, password=DATABASE_PASSWORD, sslmode='prefer')
+    conn.autocommit = True
+
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(sql_string)
+                results = cur.fetchall()
+
+    finally:
+        conn.close()
+
+    project_list = []
+    for proj in results:
+        project_list.append(Project(*proj))
+
+    return project_list if results else None
+
 
 def search_project(project_name):
     """Query existing projects on the database by project name.

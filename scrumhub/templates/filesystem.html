@@ -27,13 +27,13 @@
             <ul>
                 <li><h4><b>Directory</b></h4></li>
                 {% if cursor.path() != '/' %}
-                    <li><a href="/project/files{{ cursor.back() }}">..</a></li>
+                <li><a href="/project/files{{ cursor.back() }}">..</a></li>
                 {% endif %}
                 {% for dir in cursor.subdir_metadata() %}
-                    <li><a href="{{ dir['absolutePath'] }}">{{ dir['relativePath'] }}</a></li>
+                <li><a href="{{ dir['absolutePath'] }}">{{ dir['relativePath'] }}</a></li>
                 {% endfor %}
                 {% for file in cursor.file_metadata() %}
-                    <li><a>{{ file['relativePath'] }}</a></li>
+                <li><a>{{ file['relativePath'] }}</a></li>
                 {% endfor %}
             </ul>
         </div>

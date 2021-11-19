@@ -1,128 +1,129 @@
 <html>
-	<head>
-	    <title>{{title}}</title>
-	    <link rel="stylesheet" href="/static/main.css">
-	</head>
+<head>
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="/static/main.css">
+</head>
 
-	<body>
+<body>
 
-    <button class="modal-btn" id="move-issue-btn" style="float: right;font-size: large;padding: 20;">Move Issue</button>
-    <div class="modal-bg" id="move-issue-bg">
-        <div class="modal">
-            <h2>Move Issue</h2>
-            <form action="/moveIssue" method="POST">
-                <label for="id">Issue Number: </label>
-                <input type="text" name="id" required>
+<button class="modal-btn" id="move-issue-btn" style="float: right;font-size: large;padding: 20;">Move Issue</button>
+<div class="modal-bg" id="move-issue-bg">
+    <div class="modal">
+        <h2>Move Issue</h2>
+        <form action="/moveIssue" method="POST">
+            <label for="id">Issue Number: </label>
+            <input type="text" name="id" required>
 
-                <br/> <h1> Move to </h1>
-                <input type="radio" id="backlog" name="newPipeline" value = "Backlog" required>
-                <label for="backlog">Backlog</label> <br/>
+            <br/>
+            <h1> Move to </h1>
+            <input type="radio" id="backlog" name="newPipeline" value="Backlog" required>
+            <label for="backlog">Backlog</label> <br/>
 
-                <input type="radio" id="planned" name="newPipeline" value = "Planned" required>
-                <label for="planned">Planned</label> <br/>
+            <input type="radio" id="planned" name="newPipeline" value="Planned" required>
+            <label for="planned">Planned</label> <br/>
 
-                <input type="radio" id="inProgress" name="newPipeline" value = "In Progress" required>
-                <label for="inProgress">In Progress</label> <br/>
+            <input type="radio" id="inProgress" name="newPipeline" value="In Progress" required>
+            <label for="inProgress">In Progress</label> <br/>
 
-                <input type="radio" id="testing" name="newPipeline" value = "Testing" required>
-                <label for="testing">Testing</label> <br/>
+            <input type="radio" id="testing" name="newPipeline" value="Testing" required>
+            <label for="testing">Testing</label> <br/>
 
-                <input type="radio" id="completed" name="newPipeline" value = "Completed" required>
-                <label for="completed">Completed</label> <br/>
+            <input type="radio" id="completed" name="newPipeline" value="Completed" required>
+            <label for="completed">Completed</label> <br/>
 
-                <input type="radio" id="closed" name="newPipeline" value = "Closed" required>
-                <label for="Closed">Closed</label> <br/>
+            <input type="radio" id="closed" name="newPipeline" value="Closed" required>
+            <label for="Closed">Closed</label> <br/>
 
 
-                <input type="submit" class="modal-btn" value="Move Issue">
-            </form>
-            <span class="modal-close" id="move-issue-close">X</span>
-        </div>
+            <input type="submit" class="modal-btn" value="Move Issue">
+        </form>
+        <span class="modal-close" id="move-issue-close">X</span>
     </div>
-        
-        <button class="modal-btn" href="#modal1" style="float: right;font-size: large;padding: 20;">Add Collaborator</button>        
-        <div id="modal1" class="modal-bg">
-            <div class="modal">
-                <h2>Invite a collaborator</h2>
-                <form action="/addCollab" method="POST">
-                    <label for="email">Email: </label>
-                    <input type="email" name="email" required>
-                    
-                    <input type="submit" class="modal-btn" value="Add">
-                </form>
-                
-                <span class="modal-close">X</span>
-            </div>
+</div>
+
+<button class="modal-btn" href="#modal1" style="float: right;font-size: large;padding: 20;">Add Collaborator</button>
+<div id="modal1" class="modal-bg">
+    <div class="modal">
+        <h2>Invite a collaborator</h2>
+        <form action="/addCollab" method="POST">
+            <label for="email">Email: </label>
+            <input type="email" name="email" required>
+
+            <input type="submit" class="modal-btn" value="Add">
+        </form>
+
+        <span class="modal-close">X</span>
+    </div>
+</div>
+
+<button class="modal-btn" href="#modal2" style="float: right;font-size: large;padding: 20;">View Collaborators</button>
+<div id="modal2" class="modal-bg">
+    <div class="modal">
+        <h2>Collaborators:</h2>
+        {{collaborators | safe}}
+        <span class="modal-close">X</span>
+    </div>
+</div>
+
+<div class="header">
+    <!-- Logo on top left corner. Plain text for now -->
+    <div class="sidenav">
+        <a href="/profile" style="text-align: center;">Profile</a>
+        <a href="/duedate" style="text-align: center;">Due Dates</a>
+        <a href="/mytasks" style="text-align: center;">My Tasks</a>
+        <a href="/my_projects" style="text-align: center;">My Projects</a>
+        <!-- <a href="#" style="text-align: center;">Meetings Tool</a> -->
+        <a href="/project/files" style="text-align: center;">Files</a>
+    </div>
+
+    <div class="newlogo">
+        Scrum Hub
+        <a href="/project/fileUpload" style="float:right;font-size: large;padding: 20"> Add a File </a>
+        <a href="/project/newIssue" style="float:right;font-size: large;padding: 20"> Create an Issue </a>
+    </div>
+</div>
+
+<div class="main">
+    <div class="mainbackproject">
+        <!-- <div class="mainnew">
+            <a href="crproject">Create New Project</a>
+        </div> -->
+
+        <div class="columns" style="background-color:#ccc;">
+            <h2>Backlog</h2>
+            {{backlog | safe}}
+        </div>
+        <div class="columns" style="background-color:#ccc;">
+            <h2>Planned</h2>
+            {{planned | safe}}
+        </div>
+        <div class="columns" style="background-color:#ccc;">
+            <h2>In Progress</h2>
+            {{inProgress | safe}}
+        </div>
+        <div class="columns" style="background-color:#ccc;">
+            <h2>Testing</h2>
+            {{testing | safe}}
+        </div>
+        <div class="columns" style="background-color:#ccc;">
+            <h2>Completed</h2>
+            {{columns | safe}}
+        </div>
+        <div class="columns" style="background-color:#ccc;">
+            <h2>Closed</h2>
+            {{closed | safe}}
         </div>
 
-        <button class="modal-btn" href="#modal2" style="float: right;font-size: large;padding: 20;">View Collaborators</button>
-        <div id="modal2" class="modal-bg">
-            <div class="modal">
-                <h2>Collaborators:</h2>
-                {{collaborators | safe}} 
-                <span class="modal-close">X</span>
-            </div>
-        </div>
+        <!--	            <div class = "columns" style="background-color:#ccc;">-->
+        <!--                    <h2>Uploaded Files</h2>-->
+        <!--		            {{files | safe}}-->
+        <!--                </div>-->
+    </div>
+</div>
 
-		<div class = "header">
-			<!-- Logo on top left corner. Plain text for now -->
-            <div class="sidenav">
-                <a href="/profile" style="text-align: center;">Profile</a>
-				<a href="/duedate" style="text-align: center;">Due Dates</a>
-				<a href="/mytasks" style="text-align: center;">My Tasks</a>
-                <a href="/my_projects" style="text-align: center;">My Projects</a>
-                <!-- <a href="#" style="text-align: center;">Meetings Tool</a> -->
-                <a href="/project/files" style="text-align: center;">Files</a>
-            </div>
+<script src="../static/project.js"></script>
+<script type="text/javascript" src="/static/modal.js"></script>
 
-			<div class="newlogo">
-			    Scrum Hub
-				<a href="/project/fileUpload" style="float:right;font-size: large;padding: 20"> Add a File </a>
-				<a href="/project/newIssue" style="float:right;font-size: large;padding: 20"> Create an Issue </a>
-            </div>
-		</div>
-
-	    <div class = "main">
-            <div class="mainbackproject">
-                <!-- <div class="mainnew">
-                    <a href="crproject">Create New Project</a>
-                </div> -->
-                
-                <div class = "columns" style="background-color:#ccc;">
-                    <h2>Backlog</h2>
-                    {{backlog | safe}}
-                </div>
-                <div class = "columns" style="background-color:#ccc;">
-                    <h2>Planned</h2>
-                    {{planned | safe}}
-                </div>
-                <div class = "columns" style="background-color:#ccc;">
-                    <h2>In Progress</h2>
-                    {{inProgress | safe}}
-                </div>
-                <div class = "columns" style="background-color:#ccc;">
-                    <h2>Testing</h2>
-                    {{testing | safe}}
-                </div>
-                <div class = "columns" style="background-color:#ccc;">
-                    <h2>Completed</h2>
-                    {{columns | safe}}
-                </div>
-                <div class = "columns" style="background-color:#ccc;">
-                    <h2>Closed</h2>
-                    {{closed | safe}}
-                </div>
-
-<!--	            <div class = "columns" style="background-color:#ccc;">-->
-<!--                    <h2>Uploaded Files</h2>-->
-<!--		            {{files | safe}}-->
-<!--                </div>-->
-            </div>
-    	</div>        
-        
-        <script src="../static/project.js"></script>
-        <script type="text/javascript" src="/static/modal.js"></script>
-
-    </body>
+</body>
 
 </html>

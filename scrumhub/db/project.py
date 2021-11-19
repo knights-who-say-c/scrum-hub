@@ -108,36 +108,36 @@ class Project:
 
 class Cursor:
 
-    def __init__(self, parent_project: Project):
-        self.project = parent_project
+    def __init__(self, parent: Project):
+        self.project = parent
         self._commit_id = self.project.latest_commit_id
         self._cur = PurePath('/')
         self.metadata = _get_folder(repo_name=self.project.uuid,
                                     commit_specifier=self._commit_id,
                                     folder_path=str(self._cur))
 
-    def pwd(self):
+    def path(self):
         return str(self._cur)
 
     def back(self):
         """Move the cursor up to the parent directory."""
-        self.goto(self._cur.parent)
+        return str(self._cur.parent)
 
     def goto(self, path):
         """Go to the specified directory."""
 
         if isinstance(path, PurePath):
-            self._cur = path
+            self._cur = '/' / path
 
         elif path in self.subdir_names():
             self._cur /= path
 
         else:
-            self._cur = PurePath(path)
+            self._cur = '/' / PurePath(path)
 
         self.metadata = _get_folder(repo_name=self.project.uuid,
                                     commit_specifier=self._commit_id,
-                                    folder_path=str(self._cur))
+                                    folder_path=self.path())
 
     def subdir_names(self):
         """Returns a list of subfolder names within the current directory."""
@@ -221,6 +221,7 @@ def get_project(uuid):
 
     return Project(*results) if results else None
 
+
 def get_my_projects(owner):
     """Query existing project on the database by its owner.
 
@@ -252,7 +253,7 @@ def get_my_projects(owner):
     for proj in results:
         project_list.append(Project(*proj))
 
-    return project_list if results else None
+    return project_list
 
 
 def search_project(project_name):

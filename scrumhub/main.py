@@ -131,7 +131,7 @@ def moveIssue():
     database.moveToPipeline(id, newPipeline, session["project_id"])
     return redirect("/project", code=301)
 
-@app.route('/project')
+@app.route('/project/')
 def projectPage():
     uploadedFiles = database.getUploadedFiles()
     injectedFiles = ""
@@ -158,9 +158,18 @@ def projectPage():
                            inProgress=IssueHTML["In Progress"], testing=IssueHTML["Testing"], completed=IssueHTML["Completed"],
                            closed=IssueHTML["Closed"], files=injectedFiles, name=getDisplayName(), collaborators=htmlInjectCollabs)
 
-@app.route('/project/files')
-def projectFiles():
-    filesystem.load_project_dir('/')
+
+@app.route('/project/files/')
+@app.route('/project/files/<path:path>')
+def load_project_dir(path=''):
+    proj = project.get_project(session['project_id'])
+    cur = proj.cursor()
+    cur.goto(path)
+
+    return render_template('filesystem.html',
+                           title="File Viewer",
+                           cursor=cur)
+
 
 @app.route('/projectCreate', methods = ["GET", "POST"])
 def projectCreate():
@@ -192,7 +201,7 @@ def fileUploadPage():
         # Get the project from the current user session
         proj = project.get_project(session['project_id'])
         # Put the file in the repo
-        proj.put_file(upload, filename)
+        proj.put_file(upload, name)
         # Redirect back to project homepage
         return redirect("/project", code=301)
 
@@ -228,7 +237,7 @@ def handle_my_projects():
     my_projects = project.get_my_projects(session['email'])
     injected_projects = []
     for proj in my_projects:
-        injected_projects.append((proj._name, proj._uuid))
+        injected_projects.append((proj.name, proj.uuid))
     return render_template("myprojects.html", title="My Projects", len = len(injected_projects), Projects=injected_projects)
 
 @app.route('/open_project', methods=['POST'])

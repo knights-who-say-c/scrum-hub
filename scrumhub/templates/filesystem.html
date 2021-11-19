@@ -8,17 +8,16 @@
     <!-- Logo on top left corner. Plain text for now -->
     <div class="sidenav">
 
-        <a href="/profile" style="text-align: center;">{{ name }}</a>
+        <a href="/profile" style="text-align: center;">Profile</a>
         <a href="duedate" style="text-align: center;">Due Dates</a>
         <a href="mytasks" style="text-align: center;">My Tasks</a>
-        <a href="#" style="text-align: center;">Meetings Tool</a>
-        <a href="/profile" style="padding-top:300%;text-align: center;">Settings</a>
-        <!-- <a href="#" style="padding-top:300%;text-align: center;">Settings</a> -->
+        <a href="/my_projects" style="text-align: center;">My Projects</a>
+        <!-- <a href="#" style="text-align: center;">Meetings Tool</a> -->
+        <a href="/project/files" style="text-align: center;">Files</a>
     </div>
 
     <div class="newlogo">
         Scrum Hub
-
     </div>
 </div>
 
@@ -27,11 +26,14 @@
         <div class="maincreate">
             <ul>
                 <li><h4><b>Directory</b></h4></li>
-                {% for dir in dirnames %}
-                    <li>{{ dir }}</li>
+                {% if cursor.path() != '/' %}
+                    <li><a href="/project/files{{ cursor.back() }}">..</a></li>
+                {% endif %}
+                {% for dir in cursor.subdir_metadata() %}
+                    <li><a href="{{ dir['absolutePath'] }}">{{ dir['relativePath'] }}</a></li>
                 {% endfor %}
-                {% for file in filenames %}
-                    <li>{{ file }}</li>
+                {% for file in cursor.file_metadata() %}
+                    <li><a>{{ file['relativePath'] }}</a></li>
                 {% endfor %}
             </ul>
         </div>

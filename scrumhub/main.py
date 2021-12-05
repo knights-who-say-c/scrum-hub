@@ -273,3 +273,9 @@ def handle_my_projects():
 def open_project():
     session['project_id'] = request.form['uuid']
     return redirect("/project", code=301)
+
+@app.route('/logout')
+def logout():
+   # remove the username from the session if it is there
+   session.pop('email', None)
+   return redirect("/login", code=301)

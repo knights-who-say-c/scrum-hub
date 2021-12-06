@@ -1,8 +1,12 @@
 # main.py
+import base64
 from base64 import b64encode
 from datetime import datetime
 from datetime import date
 from datetime import *
+from pathlib import PurePath
+from io import BytesIO
+
 from flask import *
 import psycopg2
 from werkzeug.utils import secure_filename
@@ -187,12 +191,40 @@ def projectPage():
 @app.route('/project/files/<path:path>')
 def load_project_dir(path=''):
     proj = project.get_project(session['project_id'])
+    path = PurePath(path)
     cur = proj.cursor()
-    cur.goto(path)
+
+    if path.suffix:
+        return redirect('/project/download/' + str(path))
+
+    try:
+        cur.goto(path)
+
+    except FileNotFoundError:
+        return abort(404, 'The requested file was not found on the server.')
 
     return render_template('filesystem.html',
                            title="File Viewer",
                            cursor=cur)
+
+
+@app.route('/project/download/<path:path>')
+def download_project_file(path=''):
+    proj = project.get_project(session['project_id'])
+    path = PurePath(path)
+    cur = proj.cursor()
+    cur.goto(path.parent)
+
+    try:
+        metadata = proj.get_file(str(path))
+        file_data = metadata.get('fileContent')
+        file = BytesIO(file_data)
+        file.name = path.name
+
+    except FileNotFoundError:
+        return abort(404, 'The requested file was not found on the server.')
+
+    return send_file(file, as_attachment=True, download_name=path.name)
 
 
 @app.route('/projectCreate', methods=["GET", "POST"])

@@ -2,6 +2,23 @@
 <head>
     <title>File Viewer</title>
     <link rel="stylesheet" href="/static/main.css">
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            text-align: left;
+            font-size: 16px;
+        }
+
+        table a {
+            color: -webkit-link !important;
+            cursor: pointer;
+            text-decoration: underline !important;
+        }
+
+        #filetable {
+            min-width: 100px;
+        }
+    </style>
 </head>
 <body>
 <div class="header">
@@ -24,18 +41,29 @@
 <div class="main">
     <div class="mainback">
         <div class="maincreate">
-            <ul>
-                <li><h4><b>Directory</b></h4></li>
+            <table id="filetable">
+                <tr>
+                    <th>{{ cursor.path() }}</th>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                </tr>
                 {% if cursor.path() != '/' %}
-                <li><a href="/project/files{{ cursor.back() }}">..</a></li>
+                    <tr>
+                        <td><a href="/project/files{{ cursor.back() }}">..</a></td>
+                    </tr>
                 {% endif %}
                 {% for dir in cursor.subdir_metadata() %}
-                <li><a href="{{ dir['absolutePath'] }}">{{ dir['relativePath'] }}</a></li>
+                    <tr>
+                        <td><a href="{{ dir['absolutePath'] }}">{{ dir['relativePath'] }}</a></td>
+                    </tr>
                 {% endfor %}
                 {% for file in cursor.file_metadata() %}
-                <li><a>{{ file['relativePath'] }}</a></li>
+                    <tr>
+                        <td><a href="{{ url_for('download_project_file', path=file['absolutePath']) }}">{{ file['relativePath'] }}</a></td>
+                    </tr>
                 {% endfor %}
-            </ul>
+            </table>
         </div>
     </div>
 </div>

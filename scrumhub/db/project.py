@@ -70,6 +70,21 @@ class Project:
         """Return a new Cursor object pointing to the project's filesystem."""
         return Cursor(self)
 
+    def get_file(self, file_path):
+        """Download a single file from the project repository.
+
+        Parameters
+        ----------
+        file_path : str
+            The name of the file you want to download, including the relative
+            path to the file in the repository.
+        """
+        response = _get_file(repo_name=self.uuid,
+                             file_path=file_path,
+                             commit_specifier=self.latest_commit_id)
+
+        return response
+
     def put_file(self, file_content, file_path):
         """Upload and commit a single file to the project repository.
 
@@ -116,6 +131,10 @@ class Cursor:
                                     commit_specifier=self._commit_id,
                                     folder_path=str(self._cur))
 
+    def name(self):
+        """The final path component name."""
+        return self._cur.name
+
     def path(self):
         return str(self._cur)
 
@@ -127,25 +146,29 @@ class Cursor:
         """Go to the specified directory."""
 
         if isinstance(path, PurePath):
-            self._cur = '/' / path
+            _cur = '/' / path
 
         elif path in self.subdir_names():
-            self._cur /= path
+            _cur = self._cur / path
 
         else:
-            self._cur = '/' / PurePath(path)
+            _cur = '/' / PurePath(path)
 
-        self.metadata = _get_folder(repo_name=self.project.uuid,
-                                    commit_specifier=self._commit_id,
-                                    folder_path=self.path())
+        try:
+            self.metadata = _get_folder(repo_name=self.project.uuid,
+                                        commit_specifier=self._commit_id,
+                                        folder_path=str(_cur))
+        except botocore.exceptions.ClientError:
+            raise FileNotFoundError('The requested file was not found on the server.')
+
+        self._cur = _cur
+
+    def get_file(self):
+        pass
 
     def subdir_names(self):
         """Returns a list of subfolder names within the current directory."""
         return [d['relativePath'] for d in self.subdir_metadata()]
-
-    def subdir_metadata(self):
-        """Returns a list of subfolder metadata within the current directory."""
-        return self.metadata.get('subFolders', [])
 
     def file_names(self):
         """Returns a list of file names within the current directory.
@@ -156,6 +179,10 @@ class Cursor:
             List of dict objects containing metadata about each file.
         """
         return [f['relativePath'] for f in self.file_metadata()]
+
+    def subdir_metadata(self):
+        """Returns a list of subfolder metadata within the current directory."""
+        return self.metadata.get('subFolders', [])
 
     def file_metadata(self):
         """Returns a list of file metadata within the current directory.
@@ -426,6 +453,52 @@ def _get_folder(repo_name, commit_specifier, folder_path):
         kwargs['commitSpecifier'] = commit_specifier
 
     response = client.get_folder(**kwargs)
+
+    return response
+
+
+def _get_file(repo_name, commit_specifier, file_path):
+    """Downloads a file in a branch in an AWS CodeCommit repository, and
+    generates a commit for the addition in the specified branch.
+
+    Parameters
+    ----------
+    repo_name : str
+        The name of the repository where you want to add or update the file.
+    commit_specifier : str, optional
+        A fully qualified reference used to identify a commit that contains the
+        version of the folder's content to return. A fully qualified reference
+        can be a commit ID, branch name, tag, or reference such as HEAD. If no
+        specifier is provided, the folder content is returned as it exists in
+        the HEAD commit.
+    file_path : str
+        The name of the file you want to add or update, including the relative
+        path to the file in the repository.
+
+    Returns
+    -------
+    response : dict
+        {"blobId": "string", "commitId": "string", "fileContent": blob,
+        "fileMode": "string", "filePath": "string", "fileSize": number}.
+    """
+    client = boto3.client('codecommit')
+    kwargs = {
+        'repositoryName': repo_name,
+        'filePath': file_path
+    }
+
+    if commit_specifier:
+        kwargs['commitSpecifier'] = commit_specifier
+
+    try:
+        response = client.get_file(**kwargs)
+
+    except botocore.exceptions.ClientError as error:
+        if error.response['Error']['Code'] == 'FileDoesNotExistException':
+            raise FileNotFoundError('The requested file was not found on the server.')
+
+        else:
+            raise error
 
     return response
 

@@ -1,0 +1,72 @@
+<html>
+<head>
+    <title>File Viewer</title>
+    <link rel="stylesheet" href="/static/main.css">
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            text-align: left;
+            font-size: 16px;
+        }
+
+        table a {
+            color: -webkit-link !important;
+            cursor: pointer;
+            text-decoration: underline !important;
+        }
+
+        #filetable {
+            min-width: 100px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <!-- Logo on top left corner. Plain text for now -->
+    <div class="sidenav">
+
+        <a href="/profile" style="text-align: center;">Profile</a>
+        <a href="/duedate" style="text-align: center;">Due Dates</a>
+        <a href="/mytasks" style="text-align: center;">My Tasks</a>
+        <a href="/my_projects" style="text-align: center;">My Projects</a>
+        <!-- <a href="#" style="text-align: center;">Meetings Tool</a> -->
+        <a href="/project/files" style="text-align: center;">Files</a>
+    </div>
+
+    <div class="newlogo">
+        Scrum Hub
+    </div>
+</div>
+
+<div class="main">
+    <div class="mainback">
+        <div class="maincreate">
+            <table id="filetable">
+                <tr>
+                    <th>{{ cursor.path() }}</th>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                </tr>
+                {% if cursor.path() != '/' %}
+                    <tr>
+                        <td><a href="/project/files{{ cursor.back() }}">..</a></td>
+                    </tr>
+                {% endif %}
+                {% for dir in cursor.subdir_metadata() %}
+                    <tr>
+                        <td><a href="{{ dir['absolutePath'] }}">{{ dir['relativePath'] }}</a></td>
+                    </tr>
+                {% endfor %}
+                {% for file in cursor.file_metadata() %}
+                    <tr>
+                        <td><a href="{{ url_for('download_project_file', path=file['absolutePath']) }}">{{ file['relativePath'] }}</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

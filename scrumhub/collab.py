@@ -1,14 +1,12 @@
 from flask import *
 import os
-import psycopg2
-from werkzeug.utils import secure_filename
 import smtplib
+from email.message import EmailMessage
 import ssl
 import psycopg2 as pg
 
 DATABASE_URL = os.environ['DATABASE_URL']
 DATABASE_PASSWORD = os.environ['DATABASE_PASSWORD']
-
 
 def validEmail(email):
     at = email.find("@")
@@ -46,14 +44,12 @@ def handleAddCollab(request, cur):
             with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
                 sender_email = "scrumhubwebapp@gmail.com"
                 server.login(sender_email, password)
-
-                msg = """From: {}
-                To: {}\n
-                Subject: [ScrumHub] Project Invitation\n
-                {} has invited you to their project on ScrumHub!.\n
-                """.format(email, collab_email, email)
-
-                server.sendmail(sender_email, collab_email, msg)
+                msg = EmailMessage()
+                msg.set_content(f'{email} has invited you to their project on ScrumHub!')
+                msg['Subject'] = '[ScrumHub] Project Invitation'
+                msg['From'] = sender_email
+                msg['To'] = collab_email
+                server.send_message(msg)
 
 
 def get_collabs(project_id):

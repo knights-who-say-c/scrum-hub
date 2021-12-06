@@ -2,16 +2,19 @@
 
 from scrumhub import database
 
+
 def validEmail(email):
     at = email.find("@")
     dot = email.find(".")
     return at != -1 and dot > at
 
+
 def validPassword(password, confirm):
     length = len(password) > 6
     confirmation = password == confirm
-    
+
     return length and confirmation
+
 
 def authenticate(formData):
     email = formData["email"]
@@ -19,6 +22,7 @@ def authenticate(formData):
         return False
 
     return database.getAccount(email)[3] == formData["password"]
+
 
 def register(formData):
     first = formData['firstName']
@@ -44,7 +48,8 @@ def register(formData):
 
     return msg
 
-def updateProfile(formData, session):        
+
+def updateProfile(formData, session):
     first = formData['fname']
     last = formData['lname']
     email = formData['email']
@@ -63,7 +68,7 @@ def updateProfile(formData, session):
             msg += "Password and confirmation must be the same <br/>"
         else:
             database.updatePassword(password, session["email"])
-            
+
     if email:
         if not validEmail(email):
             msg += "Email is not a valid address <br/>"
@@ -71,5 +76,3 @@ def updateProfile(formData, session):
             database.updateEmail(email, session["email"])
             session['email'] = email
     return msg
-    
-

@@ -1,16 +1,43 @@
 <html>
-	<head><title>File Upload</title></head>
+<head>
+    <title>File Upload</title>
+    <link rel="stylesheet" href="/static/main.css">
+</head>
+<body>
+<div class="header">
+    <!-- Logo on top left corner. Plain text for now -->
+    <div class="sidenav">
+        <a href="/profile" style="text-align: center;">Profile</a>
+        <a href="/duedate" style="text-align: center;">Due Dates</a>
+        <a href="/mytasks" style="text-align: center;">My Tasks</a>
+        <a href="/my_projects" style="text-align: center;">My Projects</a>
+        <!-- <a href="#" style="text-align: center;">Meetings Tool</a> -->
+        <a href="/project/files" style="text-align: center;">Files</a>
+    </div>
 
-	<body>
-        <div id="popup">
-            {% set action = '/project/fileUpload' %}
-            <form name="fileUpload" action={{ action }} method="POST" enctype="multipart/form-data">
-                <label for="filename">File Name</label><br/>
-                <input type="text" id="filename" name="filename" required><br/>
-                <label for="file">File</label><br/>
-                <input type="file" id="file" name="file" required><br/>
-                <input type="submit" value="Submit">
-            </form>
+    <div class="newlogo">
+        Scrum Hub
+
+    </div>
+</div>
+
+<div class="main">
+    <div class="mainback">
+        <div class="maincreate">
+            <div id="popup">
+                <form name="fileUpload" action="/project/fileUpload" method="POST" enctype="multipart/form-data">
+                    <label for="filename">File Name</label><br>
+                    <input type="text" id="filename" name="filename" required=""><br>
+                    <label for="file">File</label><br>
+                    <input type="file" id="file" name="file" required=""><br>
+                    <label for="description">File description</label><br>
+                    <input type="text" id="description" name="description" required=""><br>
+                    <input type="submit" value="Submit">
+                </form>
+            </div>
         </div>
-    </body>
+    </div>
+</div>
+
+</body>
 </html>

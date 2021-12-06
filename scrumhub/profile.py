@@ -5,20 +5,6 @@ from werkzeug.utils import secure_filename
 import smtplib
 import ssl
 
-
-def validEmail(email):
-    at = email.find("@")
-    dot = email.find(".")
-    return at != -1 and dot > at
-
-
-def validPassword(password, confirm):
-    length = len(password) > 6
-    confirmation = password == confirm
-
-    return length and confirmation
-
-
 class Profile:
     def update(request, cur):
         if request.method == 'POST':
@@ -40,14 +26,13 @@ class Profile:
                     "UPDATE testLogins SET lastName = (%s) WHERE email = (%s)", (last, session['email'],))
 
             if password:
-                if not validPassword(password, passwordConfirm):
+                if not login.validPassword(password, passwordConfirm):
                     msg += "Password and confirmation must be the same <br/>"
                 else:
-                    cur.execute(
-                        "UPDATE testLogins SET password = (%s) WHERE email = (%s)", (password, session['email'],))
+                    cur.execute("UPDATE testLogins SET password = (%s) WHERE email = (%s)", (password, session['email'],))
 
             if email:
-                if not validEmail(email):
+                if not login.validEmail(email):
                     msg += "Email is not a valid address <br/>"
                 else:
                     cur.execute(

@@ -32,7 +32,7 @@ a {
   height: 100%;
   align-items: center;
   display: flex;
-  height: calc(100vh - max(10vh, 64px));
+  /* height: calc(100vh - max(10vh, 64px)); */
   background-color: cadetblue;
 }
 
@@ -62,7 +62,7 @@ a {
 	display: inline-block;
 	padding-top: 20px;
 	padding-bottom: 20px;
-	background-color: Whitesmoke;
+	background-color: lightgray;
 	width:50%;
 }
 
@@ -103,6 +103,15 @@ form > input[type="submit"] {
   margin-right: auto;
   width: fit-content;
   padding-top: 20%;
+  padding-left: inherit;
+  font-size: x-large;
+}
+
+.mainbackpr {
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
+  padding-top: 10%;
   padding-left: inherit;
   font-size: x-large;
 }
@@ -218,7 +227,7 @@ form > input[type="submit"] {
   font-family: "Motserrat", sans-serif;
   background-color: white;
   width: 30%;
-  height: 30%;
+  height: auto;
   display: flex;
   justify-content: space-around;
   align-items: center;

@@ -1,5 +1,6 @@
 import base64
 import tempfile
+from pathlib import PurePath
 
 import boto3
 import json
@@ -31,7 +32,7 @@ class Project:
         return self._uuid
 
     @property
-    def project_name(self) -> str:
+    def name(self) -> str:
         """Project name."""
         return self._name
 
@@ -65,6 +66,25 @@ class Project:
 
         return commit_id
 
+    def cursor(self):
+        """Return a new Cursor object pointing to the project's filesystem."""
+        return Cursor(self)
+
+    def get_file(self, file_path):
+        """Download a single file from the project repository.
+
+        Parameters
+        ----------
+        file_path : str
+            The name of the file you want to download, including the relative
+            path to the file in the repository.
+        """
+        response = _get_file(repo_name=self.uuid,
+                             file_path=file_path,
+                             commit_specifier=self.latest_commit_id)
+
+        return response
+
     def put_file(self, file_content, file_path):
         """Upload and commit a single file to the project repository.
 
@@ -83,6 +103,96 @@ class Project:
                              parent_commit_id=self.latest_commit_id)
 
         return response
+
+    def delete_file(self, file_path):
+        """Delete and commit a single file on the project repository.
+
+        Parameters
+        ----------
+        file_path : str
+            The name of the file you want to add or update, including the
+            relative path to the file in the repository.
+        """
+        response = _delete_file(repo_name=self.uuid,
+                                branch_name='main',
+                                file_path=file_path,
+                                parent_commit_id=self.latest_commit_id)
+
+        return response
+
+
+class Cursor:
+
+    def __init__(self, parent: Project):
+        self.project = parent
+        self._commit_id = self.project.latest_commit_id
+        self._cur = PurePath('/')
+        self.metadata = _get_folder(repo_name=self.project.uuid,
+                                    commit_specifier=self._commit_id,
+                                    folder_path=str(self._cur))
+
+    def name(self):
+        """The final path component name."""
+        return self._cur.name
+
+    def path(self):
+        return str(self._cur)
+
+    def back(self):
+        """Move the cursor up to the parent directory."""
+        return str(self._cur.parent)
+
+    def goto(self, path):
+        """Go to the specified directory."""
+
+        if isinstance(path, PurePath):
+            _cur = '/' / path
+
+        elif path in self.subdir_names():
+            _cur = self._cur / path
+
+        else:
+            _cur = '/' / PurePath(path)
+
+        try:
+            self.metadata = _get_folder(repo_name=self.project.uuid,
+                                        commit_specifier=self._commit_id,
+                                        folder_path=str(_cur))
+        except botocore.exceptions.ClientError:
+            raise FileNotFoundError('The requested file was not found on the server.')
+
+        self._cur = _cur
+
+    def get_file(self):
+        pass
+
+    def subdir_names(self):
+        """Returns a list of subfolder names within the current directory."""
+        return [d['relativePath'] for d in self.subdir_metadata()]
+
+    def file_names(self):
+        """Returns a list of file names within the current directory.
+
+        Returns
+        -------
+        files : list of str
+            List of dict objects containing metadata about each file.
+        """
+        return [f['relativePath'] for f in self.file_metadata()]
+
+    def subdir_metadata(self):
+        """Returns a list of subfolder metadata within the current directory."""
+        return self.metadata.get('subFolders', [])
+
+    def file_metadata(self):
+        """Returns a list of file metadata within the current directory.
+
+        Returns
+        -------
+        files : list of dict
+            List of dict objects containing metadata about each file.
+        """
+        return self.metadata.get('files', [])
 
 
 def create_project(project_name, owner_name, contrib_names):
@@ -138,6 +248,7 @@ def get_project(uuid):
 
     return Project(*results) if results else None
 
+
 def get_my_projects(owner):
     """Query existing project on the database by its owner.
 
@@ -169,7 +280,7 @@ def get_my_projects(owner):
     for proj in results:
         project_list.append(Project(*proj))
 
-    return project_list if results else None
+    return project_list
 
 
 def search_project(project_name):
@@ -182,7 +293,7 @@ def search_project(project_name):
 
         Returns
         -------
-        query : list
+        proj : Project
             List containing entries from the project database table that
             matched the project_name argument.
         """
@@ -309,7 +420,90 @@ def _delete_project_repo(repo_name):
     return response
 
 
-def _put_file(repo_name, branch_name, file_content, file_path, parent_commit_id):
+def _get_folder(repo_name, commit_specifier, folder_path):
+    """Returns the contents of a specified folder in a repository.
+
+    Parameters
+    ----------
+    repo_name : str
+        The name of the repository.
+    commit_specifier : str, optional
+        A fully qualified reference used to identify a commit that contains the
+        version of the folder's content to return. A fully qualified reference
+        can be a commit ID, branch name, tag, or reference such as HEAD. If no
+        specifier is provided, the folder content is returned as it exists in
+        the HEAD commit.
+    folder_path : str
+        The fully qualified path to the folder whose contents are returned,
+        including the folder name. For example, /examples is a fully-qualified
+        path to a folder named examples that was created off of the root
+        directory (/) of a repository.
+    Returns
+    -------
+    response : dict
+        See the API for details on response syntax.
+    """
+    client = boto3.client('codecommit')
+    kwargs = {
+        'repositoryName': repo_name,
+        'folderPath': folder_path
+    }
+
+    if commit_specifier:
+        kwargs['commitSpecifier'] = commit_specifier
+
+    response = client.get_folder(**kwargs)
+
+    return response
+
+
+def _get_file(repo_name, commit_specifier, file_path):
+    """Downloads a file in a branch in an AWS CodeCommit repository, and
+    generates a commit for the addition in the specified branch.
+
+    Parameters
+    ----------
+    repo_name : str
+        The name of the repository where you want to add or update the file.
+    commit_specifier : str, optional
+        A fully qualified reference used to identify a commit that contains the
+        version of the folder's content to return. A fully qualified reference
+        can be a commit ID, branch name, tag, or reference such as HEAD. If no
+        specifier is provided, the folder content is returned as it exists in
+        the HEAD commit.
+    file_path : str
+        The name of the file you want to add or update, including the relative
+        path to the file in the repository.
+
+    Returns
+    -------
+    response : dict
+        {"blobId": "string", "commitId": "string", "fileContent": blob,
+        "fileMode": "string", "filePath": "string", "fileSize": number}.
+    """
+    client = boto3.client('codecommit')
+    kwargs = {
+        'repositoryName': repo_name,
+        'filePath': file_path
+    }
+
+    if commit_specifier:
+        kwargs['commitSpecifier'] = commit_specifier
+
+    try:
+        response = client.get_file(**kwargs)
+
+    except botocore.exceptions.ClientError as error:
+        if error.response['Error']['Code'] == 'FileDoesNotExistException':
+            raise FileNotFoundError('The requested file was not found on the server.')
+
+        else:
+            raise error
+
+    return response
+
+
+def _put_file(repo_name, branch_name, parent_commit_id, file_content, file_path):
     """Adds or updates a file in a branch in an AWS CodeCommit repository, and
     generates a commit for the addition in the specified branch.
 
@@ -320,15 +514,15 @@ def _put_file(repo_name, branch_name, file_content, file_path, parent_commit_id)
     branch_name : str
         The name of the branch where you want to add or update the file. If
         this is an empty repository, this branch is created.
-    file_content : bytes
-        The content of the file, in Base64-encoded binary object format.
-    file_path : str
-        The name of the file you want to add or update, including the relative
-        path to the file in the repository.
     parent_commit_id : str
         The full commit ID of the head commit in the branch where you want to
         add or update the file. If this is an empty repository, no commit ID is
         required. If this is not an empty repository, a commit ID is required.
+    file_content : bytes
+        The content of the file, in binary object format.
+    file_path : str
+        The name of the file you want to add or update, including the relative
+        path to the file in the repository.
 
     Returns
     -------
@@ -344,9 +538,48 @@ def _put_file(repo_name, branch_name, file_content, file_path, parent_commit_id)
     }
 
     if parent_commit_id:
-        kwargs['parent_commit_id'] = parent_commit_id
+        kwargs['parentCommitId'] = parent_commit_id
 
     response = client.put_file(**kwargs)
+
+    return response
+
+
+def _delete_file(repo_name, branch_name, parent_commit_id, file_path):
+    """Deletes a specified file from a specified branch. A commit is created on
+    the branch that contains the revision. The file still exists in the commits
+    earlier to the commit that contains the deletion.
+
+    Parameters
+    ----------
+    repo_name : str
+        The name of the repository where you want to add or update the file.
+    branch_name : str
+        The name of the branch where you want to add or update the file. If
+        this is an empty repository, this branch is created.
+    parent_commit_id : str
+        The full commit ID of the head commit in the branch where you want to
+        add or update the file. If this is an empty repository, no commit ID is
+        required. If this is not an empty repository, a commit ID is required.
+    file_path : str
+        The name of the file you want to add or update, including the relative
+        path to the file in the repository.
+
+    Returns
+    -------
+    response : dict
+        {'blobId': 'string', 'commitId': 'string', 'filePath': 'string',
+        'treeId': 'string'}.
+    """
+    client = boto3.client('codecommit')
+    kwargs = {
+        'repositoryName': repo_name,
+        'branchName': branch_name,
+        'parent_commit_id': parent_commit_id,
+        'filePath': file_path
+    }
+
+    response = client.delete_file(**kwargs)
 
     return response
 
@@ -427,3 +660,9 @@ def sign_s3():
         'data': presigned_post,
         'url': 'https://%s.s3.amazonaws.com/%s' % (s3_bucket, file_name)
     })
+
+
+if __name__ == '__main__':
+    project = search_project('test-project')
+    cur = project.cursor()
+    print(cur.file_metadata())

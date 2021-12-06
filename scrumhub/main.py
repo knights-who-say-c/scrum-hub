@@ -247,6 +247,7 @@ def fileUploadPage():
 
         name = formData["filename"]
         name = escapeHTML(name)
+        description = formData["description"]
         # Get the file as a FileStorage object
         upload = request.files["file"]
         # Save the filename securely (strip whitespaces, etc.)
@@ -256,7 +257,7 @@ def fileUploadPage():
         # Get the project from the current user session
         proj = project.get_project(session['project_id'])
         # Put the file in the repo
-        proj.put_file(upload, name)
+        proj.put_file(upload, name, description)
         # Redirect back to project homepage
         return redirect("/project", code=301)
 

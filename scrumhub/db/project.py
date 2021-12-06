@@ -85,7 +85,7 @@ class Project:
 
         return response
 
-    def put_file(self, file_content, file_path):
+    def put_file(self, file_content, file_path, file_description):
         """Upload and commit a single file to the project repository.
 
         Parameters
@@ -95,11 +95,14 @@ class Project:
         file_path : str
             The name of the file you want to add or update, including the
             relative path to the file in the repository.
+        file_description : str
+            The description of the file you want to add or update.
         """
         response = _put_file(repo_name=self.uuid,
                              branch_name='main',
                              file_content=file_content,
                              file_path=file_path,
+                             file_description=file_description,
                              parent_commit_id=self.latest_commit_id)
 
         return response
@@ -503,7 +506,7 @@ def _get_file(repo_name, commit_specifier, file_path):
     return response
 
 
-def _put_file(repo_name, branch_name, parent_commit_id, file_content, file_path):
+def _put_file(repo_name, branch_name, parent_commit_id, file_content, file_path, file_description):
     """Adds or updates a file in a branch in an AWS CodeCommit repository, and
     generates a commit for the addition in the specified branch.
 
@@ -523,6 +526,8 @@ def _put_file(repo_name, branch_name, parent_commit_id, file_content, file_path)
     file_path : str
         The name of the file you want to add or update, including the relative
         path to the file in the repository.
+    file_description : str
+        A description of the contents of the file being added or updated.
 
     Returns
     -------
@@ -534,7 +539,8 @@ def _put_file(repo_name, branch_name, parent_commit_id, file_content, file_path)
         'repositoryName': repo_name,
         'branchName': branch_name,
         'fileContent': file_content,
-        'filePath': file_path
+        'filePath': file_path,
+        'commitMessage': file_description
     }
 
     if parent_commit_id:
